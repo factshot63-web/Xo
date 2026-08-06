@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>X-O Secret Chat</title>
+    <!-- إعدادات PWA -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1a1a2e">
+    <link rel="apple-touch-icon" href="icon-192x192.png">
+    
+    <style>
+        /* إعدادات عامة وتأثيرات بصرية */
+        :root {
+            --bg-color: #1a1a2e;
+            --primary: #e94560;
+            --secondary: #0f3460;
+            --text-light: #fff;
+            --board-bg: #16213e;
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-light);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Animations */
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+        @keyframes glow { 0% { box-shadow: 0 0 5px var(--primary); } 50% { box-shadow: 0 0 20px var(--primary); } 100% { box-shadow: 0 0 5px var(--primary); } }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            padding: 20px;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        h1 { text-align: center; margin-bottom: 20px; text-shadow: 0 0 10px var(--primary); }
+
+        /* قسم اللعبة */
+        #game-section { display: flex; flex-direction: column; align-items: center; }
+        
+        .choice-container { margin-bottom: 20px; text-align: center; }
+        .choice-btn {
+            background: var(--secondary); color: white; border: none; padding: 10px 30px; 
+            font-size: 24px; font-weight: bold; cursor: pointer; border-radius: 10px; margin: 0 10px;
+            transition: all 0.3s;
+        }
+        .choice-btn:hover { background: var(--primary); animation: pulse 1s infinite; }
+
+        .board {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
+            background: var(--board-bg); padding: 15px; border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .cell {
+            width: 90px; height: 90px; background: var(--bg-color);
+            display: flex; justify-content: center; align-items: center;
+            font-size: 40px; font-weight: bold; cursor: pointer; border-radius: 10px;
+            transition: 0.3s;
+        }
+        .cell:hover { background: var(--secondary); }
+        .cell.x { color: #e94560; }
+        .cell.o { color: #4ecca3; }
+
+        .status { margin-top: 20px; font-size: 20px; font-weight: bold; min-height: 30px; }
+
+        /* نافذة الرقم السري المنبثقة */
+        .modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.8); justify-content: center; align-items: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background: var(--board-bg); padding: 30px; border-radius: 15px; text-align: center;
+            animation: fadeIn 0.5s; border: 2px solid var(--primary);
+        }
+        .modal-content input {
+            padding: 10px; font-size: 18px; width: 80%; margin: 15px 0;
+            border-radius: 5px; border: none; outline: none; text-align: center;
+        }
+        .modal-content button {
+            padding: 10px 20px; background: var(--primary); color: white;
+            border: none; border-radius: 5px; cursor: pointer; font-size: 16px; font-weight: bold;
+        }
+
+        /* قسم الدردشة */
+        #chat-section { display: none; height: 80vh; flex-direction: column; }
+        .chat-header {
+            background: var(--primary); padding: 15px; text-align: center;
+            border-radius: 10px 10px 0 0; font-weight: bold; font-size: 20px;
+        }
+        .chat-messages {
+            flex: 1; background: var(--board-bg); padding: 15px; overflow-y: auto;
+            display: flex; flex-direction: column; gap: 10px; border: 1px solid var(--secondary);
+        }
+        .message {
+            background: var(--secondary); padding: 10px 15px; border-radius: 20px;
+            max-width: 80%; word-wrap: break-word; font-size: 15px;
+            animation: fadeIn 0.3s; align-self: flex-start;
+        }
+        .chat-input-area { display: flex; padding: 10px; background: var(--board-bg); border-radius: 0 0 10px 10px; }
+        .chat-input-area input {
+            flex: 1; padding: 12px; border-radius: 20px; border: none; outline: none;
+            background: var(--bg-color); color: white; margin-left: 10px;
+        }
+        .chat-input-area button {
+            background: var(--primary); color: white; border: none; padding: 10px 20px;
+            border-radius: 20px; cursor: pointer; font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- قسم اللعبة -->
+    <div id="game-section">
+        <h1>X-O Game</h1>
+        <div class="choice-container">
+            <p style="margin-bottom: 10px;">اختر لتلعب ضد الكمبيوتر:</p>
+            <button class="choice-btn" id="btn-x">X</button>
+            <button class="choice-btn" id="btn-o">O</button>
+        </div>
+        
+        <div class="board" id="board">
+            <div class="cell" data-index="0"></div>
+            <div class="cell" data-index="1"></div>
+            <div class="cell" data-index="2"></div>
+            <div class="cell" data-index="3"></div>
+            <div class="cell" data-index="4"></div>
+            <div class="cell" data-index="5"></div>
+            <div class="cell" data-index="6"></div>
+            <div class="cell" data-index="7"></div>
+            <div class="cell" data-index="8"></div>
+        </div>
+        <div class="status" id="status"></div>
+    </div>
+
+    <!-- نافذة السر (كلمة المرور) -->
+    <div class="modal" id="secret-modal">
+        <div class="modal-content">
+            <h2>بوابة الدخول السرية</h2>
+            <p>أدخل الكود السري للوصول للدردشة العامة</p>
+            <input type="password" id="secret-input" placeholder="أدخل الرمز...">
+            <br>
+            <button id="verify-btn">دخول</button>
+            <p id="error-msg" style="color: red; margin-top: 10px; display: none;">الرمز غير صحيح!</p>
+        </div>
+    </div>
+
+    <!-- قسم الدردشة -->
+    <div id="chat-section">
+        <div class="chat-header">غرفة الدردشة السرية 🌐</div>
+        <div class="chat-messages" id="chat-messages">
+            <!-- ستظهر الرسائل هنا -->
+        </div>
+        <div class="chat-input-area">
+            <input type="text" id="chat-input" placeholder="اكتب رسالتك هنا...">
+            <button id="send-btn">إرسال</button>
+        </div>
+    </div>
+</div>
+
+<!-- تسجيل Service Worker للـ PWA -->
+<script>
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('sw.js').then(reg => {
+                console.log('Service Worker Registered!', reg);
+            }).catch(err => console.log('Service Worker Failed!', err));
+        });
+    }
+</script>
+
+<!-- ربط Firebase وتشغيل اللعبة والدردشة -->
+<script type="module">
+    // استيراد Firebase من الـ CDN الخاص بالإصدار 10
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-analytics.js";
+    import { getDatabase, ref, push, onChildAdded, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+    // إعدادات Firebase الخاصة بك
+    const firebaseConfig = {
+        apiKey: "AIzaSyCBEtbRajG95opDRkHbstnmt79a4v8lUX0",
+        authDomain: "xojs-4e0dc.firebaseapp.com",
+        projectId: "xojs-4e0dc",
+        storageBucket: "xojs-4e0dc.firebasestorage.app",
+        messagingSenderId: "504484947768",
+        appId: "1:504484947768:web:09b3040669d558bc0ac3cd",
+        measurementId: "G-2BE5RYWLYZ"
+    };
+
+    // تهيئة Firebase
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+    const db = getDatabase(app);
+    const chatRef = ref(db, 'global_chat');
+
+    // ==========================================
+    // منطق الاختيار السري (3 ضغطات)
+    // ==========================================
+    let secretClickCount = 0;
+    let secretTimeout;
+
+    const handleSecretClick = () => {
+        secretClickCount++;
+        clearTimeout(secretTimeout);
+        
+        if (secretClickCount === 3) {
+            document.getElementById('secret-modal').style.display = 'flex';
+            secretClickCount = 0;
+        }
+
+        // تصفير العداد إذا لم يتم الضغط بسرعة
+        secretTimeout = setTimeout(() => {
+            secretClickCount = 0;
+        }, 1500);
+    };
+
+    document.getElementById('btn-x').addEventListener('click', handleSecretClick);
+    document.getElementById('btn-o').addEventListener('click', handleSecretClick);
+
+    // التحقق من الرمز السري
+    document.getElementById('verify-btn').addEventListener('click', () => {
+        const inputVal = document.getElementById('secret-input').value;
+        if (inputVal === "Homos77#") {
+            document.getElementById('secret-modal').style.display = 'none';
+            document.getElementById('game-section').style.display = 'none';
+            document.getElementById('chat-section').style.display = 'flex';
+        } else {
+            document.getElementById('error-msg').style.display = 'block';
+            setTimeout(() => { document.getElementById('error-msg').style.display = 'none'; }, 2000);
+        }
+    });
+
+    // ==========================================
+    // منطق لعبة X-O ضد الكمبيوتر
+    // ==========================================
+    let board = ["", "", "", "", "", "", "", "", ""];
+    let player = "X";
+    let computer = "O";
+    let isGameActive = true;
+    const cells = document.querySelectorAll('.cell');
+    const statusText = document.getElementById('status');
+
+    // تحديد اختيار اللاعب
+    document.getElementById('btn-x').addEventListener('click', () => { player = "X"; computer = "O"; resetBoard(); });
+    document.getElementById('btn-o').addEventListener('click', () => { player = "O"; computer = "X"; resetBoard(); });
+
+    const winConditions = [
+        [0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6], [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6]
+    ];
+
+    cells.forEach(cell => {
+        cell.addEventListener('click', () => {
+            const index = cell.getAttribute('data-index');
+            if (board[index] === "" && isGameActive) {
+                makeMove(index, player);
+                if (isGameActive) {
+                    setTimeout(computerMove, 500); // تأخير بسيط ليبدو واقعياً
+                }
+            }
+        });
+    });
+
+    function makeMove(index, symbol) {
+        board[index] = symbol;
+        cells[index].innerText = symbol;
+        cells[index].classList.add(symbol.toLowerCase());
+        checkWinner();
+    }
+
+    function computerMove() {
+        let availableCells = board.map((val, idx) => val === "" ? idx : null).filter(val => val !== null);
+        if (availableCells.length > 0) {
+            let randomIndex = availableCells[Math.floor(Math.random() * availableCells.length)];
+            makeMove(randomIndex, computer);
+        }
+    }
+
+    function checkWinner() {
+        let roundWon = false;
+        for (let i = 0; i < winConditions.length; i++) {
+            const [a, b, c] = winConditions[i];
+            if (board[a] && board[a] === board[b] && board[a] === board[c]) {
+                roundWon = true;
+                break;
+            }
+        }
+
+        if (roundWon) {
+            statusText.innerText = "انتهت اللعبة!";
+            isGameActive = false;
+            setTimeout(resetBoard, 2000);
+            return;
+        }
+
+        if (!board.includes("")) {
+            statusText.innerText = "تعادل!";
+            isGameActive = false;
+            setTimeout(resetBoard, 2000);
+        }
+    }
+
+    function resetBoard() {
+        board = ["", "", "", "", "", "", "", "", ""];
+        isGameActive = true;
+        statusText.innerText = "";
+        cells.forEach(cell => {
+            cell.innerText = "";
+            cell.classList.remove("x", "o");
+        });
+    }
+
+    // ==========================================
+    // منطق الدردشة (Firebase Realtime Database)
+    // ==========================================
+    const chatInput = document.getElementById('chat-input');
+    const sendBtn = document.getElementById('send-btn');
+    const messagesDiv = document.getElementById('chat-messages');
+
+    sendBtn.addEventListener('click', sendMessage);
+    chatInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') sendMessage();
+    });
+
+    function sendMessage() {
+        const text = chatInput.value.trim();
+        if (text.length > 0) {
+            push(chatRef, {
+                text: text,
+                timestamp: serverTimestamp()
+            });
+            chatInput.value = "";
+        }
+    }
+
+    // استماع للرسائل القادمة وعرضها
+    onChildAdded(chatRef, (snapshot) => {
+        const data = snapshot.val();
+        const msgDiv = document.createElement('div');
+        msgDiv.classList.add('message');
+        msgDiv.innerText = data.text;
+        messagesDiv.appendChild(msgDiv);
+        messagesDiv.scrollTop = messagesDiv.scrollHeight; // التمرير لأسفل تلقائياً
+    });
+
+</script>
+
+</body>
+</html>
