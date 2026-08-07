@@ -4,11 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>X-O & More | Secret Chat</title>
-    <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0b0c10">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="apple-touch-icon" href="icon-192x192.png">
     
     <style>
         :root {
@@ -20,7 +18,6 @@
             --received-bubble: rgba(30, 36, 51, 0.85);
             --text-main: #ffffff;
             --text-sub: #949aaf;
-            --accent-glow: rgba(0, 198, 255, 0.35);
         }
 
         * {
@@ -29,34 +26,32 @@
             touch-action: manipulation; -webkit-tap-highlight-color: transparent; user-select: none;
         }
 
+        /* إصلاح حجم الشاشة للموبايل */
         body {
             background: radial-gradient(circle at top, #141824 0%, #08090d 100%);
             color: var(--text-main); display: flex; justify-content: center; align-items: center;
-            min-height: 100vh; min-height: -webkit-fill-available; overflow: hidden;
+            height: 100dvh; /* الحل السحري للموبايل */
+            overflow: hidden;
         }
 
         .app-container {
-            width: 100%; max-width: 440px; height: 100vh; max-height: 920px;
+            width: 100%; max-width: 440px; height: 100%; 
             background: var(--card-glass); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
-            border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 32px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
             display: flex; flex-direction: column; overflow: hidden; position: relative;
         }
 
-        @keyframes springUp {
-            0% { transform: translateY(20px) scale(0.95); opacity: 0; }
-            100% { transform: translateY(0) scale(1); opacity: 1; }
-        }
-
         .header {
-            padding: 18px 20px; text-align: center; font-size: 18px; font-weight: 900;
+            padding: 15px 20px; text-align: center; font-size: 18px; font-weight: 900;
             background: linear-gradient(135deg, #00c6ff, #ff2a5f); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
             border-bottom: 1px solid rgba(255, 255, 255, 0.05); display: flex; justify-content: space-between; align-items: center;
+            flex-shrink: 0;
         }
 
         /* ----- Game Section ----- */
         #game-section {
             flex: 1; display: flex; flex-direction: column; position: relative;
-            animation: springUp 0.5s ease; padding-bottom: 70px; /* Space for bottom nav */
+            padding-bottom: 70px; overflow-y: auto; overflow-x: hidden;
         }
 
         .nav-back-chat-btn {
@@ -65,115 +60,118 @@
             border-radius: 12px; font-size: 12px; font-weight: 800; cursor: pointer; display: none; z-index: 10;
         }
 
-        .game-modes {
-            display: flex; gap: 10px; margin: 20px auto; width: 90%; max-width: 320px;
-        }
+        .game-modes { display: flex; gap: 10px; margin: 15px auto; width: 90%; max-width: 320px; flex-shrink: 0; }
         .mode-btn {
             flex: 1; padding: 10px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);
             background: rgba(255,255,255,0.05); color: var(--text-sub); font-weight: bold; cursor: pointer; transition: 0.3s;
         }
         .mode-btn.active { background: var(--primary-grad); color: white; border-color: transparent; }
 
+        /* سكور اللعب */
+        .score-board {
+            display: flex; justify-content: center; gap: 30px; margin-bottom: 10px; font-size: 14px; font-weight: bold;
+            background: rgba(0,0,0,0.3); padding: 8px 20px; border-radius: 20px; width: fit-content; margin-left: auto; margin-right: auto;
+        }
+        .score-me { color: #00c6ff; }
+        .score-enemy { color: #ff2a5f; }
+
+        /* شات اللعب السريع */
+        .quick-chat-bar {
+            display: none; justify-content: center; gap: 8px; margin: 10px 0; overflow-x: auto; padding: 0 10px;
+        }
+        .quick-chat-btn {
+            background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 15px;
+            padding: 6px 12px; font-size: 16px; cursor: pointer; white-space: nowrap; color: #fff;
+        }
+        .quick-msg-toast {
+            position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%);
+            background: var(--received-bubble); color: white; padding: 12px 24px; border-radius: 20px;
+            font-size: 20px; font-weight: bold; z-index: 100; box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            opacity: 0; pointer-events: none; transition: opacity 0.3s, transform 0.3s;
+        }
+        .quick-msg-toast.show { opacity: 1; transform: translate(-50%, -60%); }
+
         /* اللوبي (نظام الغرف) */
-        .lobby-container {
-            display: none; flex-direction: column; align-items: center; justify-content: center;
-            flex: 1; padding: 20px; text-align: center;
-        }
-        .lobby-box {
-            background: rgba(0,0,0,0.4); padding: 20px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05); width: 100%; max-width: 300px; margin-bottom: 15px;
-        }
+        .lobby-container { display: none; flex-direction: column; align-items: center; justify-content: center; flex: 1; padding: 20px; text-align: center; }
+        .lobby-box { background: rgba(0,0,0,0.4); padding: 20px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05); width: 100%; max-width: 300px; margin-bottom: 15px; }
         .lobby-box h3 { font-size: 16px; margin-bottom: 15px; color: #fff; }
-        .btn-action {
-            background: var(--secondary-grad); color: white; border: none; padding: 12px; width: 100%;
-            border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 15px;
-        }
-        .room-code-display {
-            font-size: 28px; font-weight: 900; letter-spacing: 4px; color: #00c6ff; margin: 15px 0; user-select: text;
-        }
-        .lobby-input {
-            width: 100%; padding: 12px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);
-            background: rgba(255,255,255,0.05); color: white; text-align: center; font-size: 16px; margin-bottom: 15px; outline: none; user-select: text;
-        }
-        .lobby-input:focus { border-color: #00c6ff; }
+        .btn-action { background: var(--secondary-grad); color: white; border: none; padding: 12px; width: 100%; border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 15px; }
+        .room-code-display { font-size: 28px; font-weight: 900; letter-spacing: 4px; color: #00c6ff; margin: 15px 0; user-select: text; }
+        .lobby-input { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); color: white; text-align: center; font-size: 16px; margin-bottom: 15px; outline: none; user-select: text; }
 
-        /* منطقة اللعب (Board Area) */
-        .game-area {
-            flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%;
-        }
-
-        .status-bar { margin: 20px 0; font-size: 17px; font-weight: 700; color: var(--text-main); text-align: center; min-height: 25px; }
+        /* منطقة اللعب */
+        .game-area { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; }
+        .status-bar { margin: 10px 0 20px; font-size: 17px; font-weight: 700; color: var(--text-main); text-align: center; min-height: 25px; }
 
         /* X-O */
         .xo-board {
-            display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; width: 90%; max-width: 320px;
-            aspect-ratio: 1; background: rgba(0, 0, 0, 0.3); padding: 14px; border-radius: 24px; border: 1px solid rgba(255,255,255,0.05);
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; width: 90%; max-width: 300px;
+            aspect-ratio: 1; background: rgba(0, 0, 0, 0.3); padding: 12px; border-radius: 24px; border: 1px solid rgba(255,255,255,0.05);
         }
         .cell {
             background: rgba(255, 255, 255, 0.03); border-radius: 18px; display: flex; justify-content: center; align-items: center;
-            font-size: 42px; font-weight: 900; cursor: pointer; border: 1px solid rgba(255, 255, 255, 0.04);
+            font-size: 40px; font-weight: 900; cursor: pointer; border: 1px solid rgba(255, 255, 255, 0.04);
         }
-        .cell:active { transform: scale(0.92); }
-        .cell.x { color: #00c6ff; text-shadow: 0 0 15px rgba(0, 198, 255, 0.5); }
-        .cell.o { color: #ff2a5f; text-shadow: 0 0 15px rgba(255, 42, 95, 0.5); }
+        .cell.x { color: #00c6ff; }
+        .cell.o { color: #ff2a5f; }
 
-        /* حجرة ورقة مقص (RPS) */
+        /* حجرة ورقة مقص */
         .rps-container { display: none; flex-direction: column; align-items: center; width: 100%; }
         .rps-choices { display: flex; gap: 15px; justify-content: center; margin-top: 20px; }
-        .rps-btn {
-            font-size: 40px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
-            width: 80px; height: 80px; border-radius: 20px; display: flex; justify-content: center; align-items: center;
-            cursor: pointer; transition: 0.2s;
-        }
-        .rps-btn:active { transform: scale(0.9); background: rgba(255,255,255,0.1); }
+        .rps-btn { font-size: 40px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); width: 80px; height: 80px; border-radius: 20px; display: flex; justify-content: center; align-items: center; cursor: pointer; }
         .rps-btn.selected { background: var(--primary-grad); border-color: transparent; }
-        .rps-battle { display: flex; justify-content: space-around; width: 100%; margin: 30px 0; font-size: 50px; }
+        .rps-battle { display: flex; justify-content: space-around; width: 100%; margin: 20px 0; font-size: 50px; }
         .rps-player-box { text-align: center; }
         .rps-player-name { font-size: 12px; color: var(--text-sub); margin-bottom: 5px; }
 
-        /* Bottom Navigation Tabs */
+        /* شريط سفلي */
         .bottom-nav {
             position: absolute; bottom: 0; left: 0; right: 0; background: rgba(18, 22, 32, 0.95);
             border-top: 1px solid rgba(255,255,255,0.05); display: flex; padding: 10px 15px calc(10px + env(safe-area-inset-bottom));
         }
-        .nav-tab {
-            flex: 1; text-align: center; padding: 10px; color: var(--text-sub); font-size: 14px; font-weight: bold;
-            cursor: pointer; border-radius: 15px; transition: 0.3s;
-        }
+        .nav-tab { flex: 1; text-align: center; padding: 10px; color: var(--text-sub); font-size: 14px; font-weight: bold; cursor: pointer; border-radius: 15px; transition: 0.3s; }
         .nav-tab.active { background: rgba(255,255,255,0.08); color: #00c6ff; }
 
         /* ----- Chat Section ----- */
         #chat-section { display: none; flex-direction: column; height: 100%; width: 100%; background: radial-gradient(circle at center, rgba(20, 25, 40, 0.5) 0%, rgba(10, 11, 16, 0.9) 100%); }
-        .chat-header { padding: 16px 20px; background: rgba(18, 22, 32, 0.9); border-bottom: 1px solid rgba(255, 255, 255, 0.06); display: flex; align-items: center; justify-content: space-between; }
+        .chat-header { padding: 12px 20px; background: rgba(18, 22, 32, 0.9); border-bottom: 1px solid rgba(255, 255, 255, 0.06); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
         .chat-title-group { display: flex; align-items: center; gap: 12px; }
         .chat-avatar { width: 42px; height: 42px; border-radius: 50%; background: linear-gradient(135deg, #ff2a5f, #00c6ff); display: flex; justify-content: center; align-items: center; font-size: 20px; }
-        .chat-info h2 { font-size: 17px; font-weight: 800; color: #fff; }
+        .chat-info h2 { font-size: 17px; font-weight: 800; color: #fff; margin-bottom: 2px; }
         .chat-info p { font-size: 11px; color: #00c6ff; }
+        .typing-indicator { font-size: 10px; color: #ff2a5f; font-weight: bold; display: none; animation: pulse 1s infinite; }
+        @keyframes pulse { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
         .chat-header-actions { display: flex; gap: 8px; }
         .game-toggle-btn { background: var(--primary-grad); color: #fff; border: none; padding: 7px 14px; border-radius: 12px; font-size: 12px; font-weight: 800; cursor: pointer; }
         
-        .chat-messages { flex: 1; padding: 20px 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 14px; }
+        /* ضبط الرسائل عشان متخرجش برا الشاشة */
+        .chat-messages { flex: 1; padding: 15px 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; min-height: 0; }
         .message-row { display: flex; flex-direction: column; width: 100%; }
         .message-row.me { align-items: flex-start; }
-        .message-row.me .message-bubble { background: var(--sent-bubble); color: #ffffff; border-radius: 20px 20px 4px 20px; border: 1px solid rgba(255, 255, 255, 0.1); }
+        .message-row.me .message-bubble { background: var(--sent-bubble); color: #ffffff; border-radius: 20px 20px 4px 20px; }
         .message-row.other { align-items: flex-end; }
         .message-row.other .message-bubble { background: var(--received-bubble); color: #e0e6ed; border-radius: 20px 20px 20px 4px; border: 1px solid rgba(255, 255, 255, 0.08); }
-        .message-bubble { max-width: 82%; padding: 10px 14px 8px 14px; font-size: 15px; line-height: 1.45; word-break: break-word; user-select: text; }
+        .message-bubble { max-width: 82%; padding: 10px 14px 8px; font-size: 15px; word-break: break-word; user-select: text; position: relative; }
         .sender-name { font-size: 11px; font-weight: 800; margin-bottom: 4px; color: #00c6ff; }
         .message-footer { display: flex; align-items: center; justify-content: flex-end; gap: 4px; margin-top: 4px; font-size: 10px; color: rgba(255, 255, 255, 0.65); }
-        
         .quoted-msg { background: rgba(0, 0, 0, 0.25); border-right: 4px solid #00c6ff; padding: 6px 10px; border-radius: 8px; font-size: 13px; margin-bottom: 6px; color: rgba(255,255,255,0.8); }
-        .reply-indicator { display: none; background: rgba(18, 22, 32, 0.95); padding: 10px 15px; border-top: 1px solid rgba(255,255,255,0.06); align-items: center; justify-content: space-between; font-size: 13px; border-left: 4px solid #ff2a5f; }
         
-        .chat-input-area { padding: 12px 14px calc(12px + env(safe-area-inset-bottom)); background: rgba(16, 20, 30, 0.95); border-top: 1px solid rgba(255, 255, 255, 0.06); display: flex; gap: 10px; align-items: center; }
-        .chat-input-area input { flex: 1; padding: 13px 18px; border-radius: 24px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(0, 0, 0, 0.4); color: white; font-size: 15px; outline: none; user-select: text; }
-        .chat-input-area button { width: 46px; height: 46px; border-radius: 50%; border: none; background: var(--primary-grad); color: white; display: flex; justify-content: center; align-items: center; cursor: pointer; flex-shrink: 0; }
+        /* تثبيت مستطيل الإدخال أسفل الشاشة تماماً */
+        .chat-input-area { 
+            padding: 10px 14px calc(10px + env(safe-area-inset-bottom)); 
+            background: rgba(16, 20, 30, 0.95); border-top: 1px solid rgba(255, 255, 255, 0.06); 
+            display: flex; gap: 10px; align-items: center; flex-shrink: 0; width: 100%;
+        }
+        .chat-input-area input { flex: 1; padding: 13px 18px; border-radius: 24px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(0, 0, 0, 0.4); color: white; font-size: 15px; outline: none; }
+        .chat-input-area button { width: 44px; height: 44px; border-radius: 50%; border: none; background: var(--primary-grad); color: white; display: flex; justify-content: center; align-items: center; cursor: pointer; flex-shrink: 0; }
+
+        .reply-indicator { display: none; background: rgba(18, 22, 32, 0.95); padding: 8px 15px; border-top: 1px solid rgba(255,255,255,0.06); align-items: center; justify-content: space-between; font-size: 13px; border-left: 4px solid #ff2a5f; flex-shrink: 0; }
 
         /* Modal Overlay */
         .modal-overlay { display: none; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(6, 7, 10, 0.92); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); justify-content: center; align-items: center; z-index: 100; }
         .modal-card { width: 85%; background: rgba(25, 30, 45, 0.95); border: 1px solid rgba(0, 198, 255, 0.3); border-radius: 28px; padding: 28px 22px; text-align: center; }
         .modal-card h3 { font-size: 22px; margin-bottom: 8px; color: var(--text-main); }
-        .modal-card p { font-size: 13px; color: var(--text-sub); margin-bottom: 20px; }
-        .modal-card input { width: 100%; padding: 15px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.4); color: #fff; font-size: 18px; text-align: center; outline: none; margin-bottom: 18px; user-select: text; }
+        .modal-card input { width: 100%; padding: 15px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.4); color: #fff; font-size: 18px; text-align: center; outline: none; margin-bottom: 18px; }
         .modal-card button { width: 100%; padding: 15px; border-radius: 16px; border: none; background: var(--primary-grad); color: white; font-size: 16px; font-weight: 800; cursor: pointer; }
         .identity-selector { display: flex; gap: 10px; margin-bottom: 15px; }
         .identity-btn { flex: 1; padding: 12px; border-radius: 14px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-sub); font-weight: 700; cursor: pointer; }
@@ -213,6 +211,22 @@
 
         <!-- ساحة اللعب النشطة -->
         <div class="game-area" id="game-area">
+            
+            <div class="score-board">
+                <div class="score-me">أنت: <span id="score-me-val">0</span></div>
+                <div class="score-enemy">الخصم: <span id="score-enemy-val">0</span></div>
+            </div>
+
+            <!-- شريط الرسايل السريعة للأونلاين -->
+            <div class="quick-chat-bar" id="quick-chat-bar">
+                <button class="quick-chat-btn" data-msg="😂">😂</button>
+                <button class="quick-chat-btn" data-msg="😡">😡</button>
+                <button class="quick-chat-btn" data-msg="👏 عاش">👏 عاش</button>
+                <button class="quick-chat-btn" data-msg="يلا بسرعة!">يلا بسرعة! ⏱️</button>
+                <button class="quick-chat-btn" data-msg="حظ!">حظ! 🍀</button>
+            </div>
+            <div id="quick-msg-toast" class="quick-msg-toast"></div>
+
             <div class="status-bar" id="status-bar">دورك باللعب</div>
 
             <!-- X-O Board -->
@@ -254,7 +268,7 @@
     <div class="modal-overlay" id="secret-modal">
         <div class="modal-card">
             <h3>منطقة ندى ومحمد 🔒</h3>
-            <p>اختر حسابك وأدخل الكود السري للدخول</p>
+            <p style="font-size:13px; color:#949aaf; margin-bottom:20px;">اختر حسابك وأدخل الكود السري</p>
             <div class="identity-selector">
                 <button class="identity-btn" id="select-nada">ندى</button>
                 <button class="identity-btn" id="select-mohamed">محمد</button>
@@ -273,6 +287,7 @@
                 <div class="chat-info">
                     <h2>ندى ومحمد</h2>
                     <p id="current-user-display">متصل الآن</p>
+                    <div class="typing-indicator" id="typing-indicator">الطرف الآخر يكتب الآن...</div>
                 </div>
             </div>
             <div class="chat-header-actions">
@@ -293,7 +308,7 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getDatabase, ref, push, onChildAdded, serverTimestamp, set, onValue, update, get, off } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+    import { getDatabase, ref, push, onChildAdded, serverTimestamp, set, onValue, update, get, off, remove, onDisconnect } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyCBEtbRajG95opDRkHbstnmt79a4v8lUX0",
@@ -301,8 +316,7 @@
       projectId: "xojs-4e0dc",
       storageBucket: "xojs-4e0dc.firebasestorage.app",
       messagingSenderId: "504484947768",
-      appId: "1:504484947768:web:09b3040669d558bc0ac3cd",
-      measurementId: "G-2BE5RYWLYZ"
+      appId: "1:504484947768:web:09b3040669d558bc0ac3cd"
     };
 
     const app = initializeApp(firebaseConfig);
@@ -356,17 +370,19 @@
     document.getElementById('nav-back-chat').onclick = () => switchTabUI('chat');
 
     // ==========================================
-    // محرك الألعاب (Game Engine & Room System)
+    // محرك الألعاب (مع حل مشكلة التبديل)
     // ==========================================
-    let activeGame = 'xo'; // 'xo' or 'rps'
-    let playMode = 'ai'; // 'ai' or 'online'
+    let activeGame = 'xo';
+    let playMode = 'ai';
     
     // Online Variables
     let currentRoomCode = null;
     let roomRef = null;
     let roomListener = null;
-    let myRole = null; // 'p1' or 'p2'
-    let onlineXO_Symbol = null; // 'X' or 'O'
+    let myRole = null; 
+    let onlineXO_Symbol = null;
+    let myScore = 0;
+    let enemyScore = 0;
 
     // UI Elements
     const btnModeAi = document.getElementById('btn-mode-ai');
@@ -377,39 +393,57 @@
     const rpsContainer = document.getElementById('rps-container');
     const statusBar = document.getElementById('status-bar');
     const tabs = document.querySelectorAll('.nav-tab');
+    const scoreMeVal = document.getElementById('score-me-val');
+    const scoreEnemyVal = document.getElementById('score-enemy-val');
+    const quickChatBar = document.getElementById('quick-chat-bar');
 
-    // تبديل المود (AI / Online)
-    btnModeAi.onclick = () => { playMode = 'ai'; updateModeUI(); resetLocalGames(); leaveRoom(); };
-    btnModeOnline.onclick = () => { playMode = 'online'; updateModeUI(); };
+    function updateScoreUI() {
+        scoreMeVal.innerText = myScore;
+        scoreEnemyVal.innerText = enemyScore;
+    }
+
+    function hapticFeedback(type = 'light') {
+        if(navigator.vibrate) {
+            if(type === 'light') navigator.vibrate(50);
+            if(type === 'heavy') navigator.vibrate([100, 50, 100]);
+        }
+    }
+
+    // تنظيف الغرفة بالكامل عند تبديل المود لمنع اللاج
+    function leaveRoom() {
+        if(roomRef && roomListener) {
+            off(roomRef, 'value', roomListener);
+            // Optionally clear quick msg listener if separate
+        }
+        currentRoomCode = null; myRole = null; roomRef = null; roomListener = null;
+        myScore = 0; enemyScore = 0; updateScoreUI();
+        quickChatBar.style.display = 'none';
+    }
+
+    btnModeAi.onclick = () => { playMode = 'ai'; updateModeUI(); leaveRoom(); resetLocalGames(); };
+    btnModeOnline.onclick = () => { playMode = 'online'; updateModeUI(); resetLocalGames(); };
 
     function updateModeUI() {
         btnModeAi.classList.toggle('active', playMode === 'ai');
         btnModeOnline.classList.toggle('active', playMode === 'online');
         if (playMode === 'ai') {
-            lobbyContainer.style.display = 'none';
-            gameArea.style.display = 'flex';
+            lobbyContainer.style.display = 'none'; gameArea.style.display = 'flex';
         } else {
-            if (currentRoomCode) {
-                lobbyContainer.style.display = 'none'; gameArea.style.display = 'flex';
-            } else {
-                lobbyContainer.style.display = 'flex'; gameArea.style.display = 'none';
-            }
+            if (currentRoomCode) { lobbyContainer.style.display = 'none'; gameArea.style.display = 'flex'; quickChatBar.style.display = 'flex'; }
+            else { lobbyContainer.style.display = 'flex'; gameArea.style.display = 'none'; }
         }
     }
 
-    // تبديل اللعبة من التبويبات السفلية
+    // تبديل اللعبة
     tabs.forEach(tab => {
         tab.onclick = () => {
             const game = tab.getAttribute('data-game');
-            tabs.forEach(t => t.classList.remove('active'));
-            tab.classList.add('active');
+            tabs.forEach(t => t.classList.remove('active')); tab.classList.add('active');
             
-            // إذا كنا أونلاين، نقوم بتحديث اللعبة في الغرفة للطرفين
             if (playMode === 'online' && currentRoomCode) {
                 update(roomRef, { activeGame: game });
             } else {
-                activeGame = game;
-                updateGameContainers();
+                activeGame = game; updateGameContainers();
             }
         };
     });
@@ -418,17 +452,15 @@
         xoContainer.style.display = activeGame === 'xo' ? 'grid' : 'none';
         rpsContainer.style.display = activeGame === 'rps' ? 'flex' : 'none';
         tabs.forEach(t => t.classList.toggle('active', t.getAttribute('data-game') === activeGame));
-        
-        if (playMode === 'ai') resetLocalGames();
+        resetLocalGames();
     }
 
     // ---------------- الغرف الأونلاين ----------------
     document.getElementById('btn-create-room').onclick = () => {
-        const code = Math.floor(1000 + Math.random() * 9000).toString(); // كود من 4 أرقام
+        const code = Math.floor(1000 + Math.random() * 9000).toString();
         document.getElementById('room-code-display').innerText = code;
         document.getElementById('room-code-display').style.display = 'block';
         document.getElementById('lobby-waiting-text').style.display = 'block';
-        
         joinOrCreateRoom(code, true);
     };
 
@@ -436,11 +468,6 @@
         const code = document.getElementById('input-room-code').value;
         if(code.length === 4) joinOrCreateRoom(code, false);
     };
-
-    function leaveRoom() {
-        if(roomRef && roomListener) off(roomRef, 'value', roomListener);
-        currentRoomCode = null; myRole = null;
-    }
 
     function joinOrCreateRoom(code, isCreator) {
         leaveRoom();
@@ -451,7 +478,7 @@
             set(roomRef, {
                 status: 'waiting', p1: deviceId, p2: null, activeGame: activeGame,
                 xoState: { board: ["","","","","","","","",""], turn: 'X' },
-                rpsState: { p1Choice: "", p2Choice: "" }
+                rpsState: { p1Choice: "", p2Choice: "" }, quickMsg: { msg: "", time: 0, from: "" }
             });
             myRole = 'p1'; onlineXO_Symbol = 'X';
         } else {
@@ -464,29 +491,49 @@
             });
         }
 
-        // الاستماع لتغييرات الغرفة لحظياً
         roomListener = onValue(roomRef, (snap) => {
             const data = snap.val();
             if (!data) return;
 
-            // تغيير اللعبة إذا قام أحد الأطراف بتغييرها
-            if (data.activeGame !== activeGame) {
-                activeGame = data.activeGame;
-                updateGameContainers();
-            }
+            if (data.activeGame !== activeGame) { activeGame = data.activeGame; updateGameContainers(); }
 
             if (data.status === 'waiting') {
-                lobbyContainer.style.display = 'flex'; gameArea.style.display = 'none';
+                lobbyContainer.style.display = 'flex'; gameArea.style.display = 'none'; quickChatBar.style.display = 'none';
             } else if (data.status === 'playing') {
-                lobbyContainer.style.display = 'none'; gameArea.style.display = 'flex';
+                lobbyContainer.style.display = 'none'; gameArea.style.display = 'flex'; quickChatBar.style.display = 'flex';
                 
                 if (activeGame === 'xo') syncXO(data.xoState);
                 if (activeGame === 'rps') syncRPS(data.rpsState);
+
+                // Quick Chat Toast
+                if(data.quickMsg && data.quickMsg.time > Date.now() - 3000 && data.quickMsg.from !== deviceId) {
+                    showQuickToast(data.quickMsg.msg); hapticFeedback();
+                }
             }
         });
     }
 
-    // ---------------- منطق لعبة X-O ----------------
+    // ---------------- Quick Chat الأونلاين ----------------
+    document.querySelectorAll('.quick-chat-btn').forEach(btn => {
+        btn.onclick = () => {
+            const msg = btn.getAttribute('data-msg');
+            if(roomRef && currentRoomCode) {
+                update(roomRef, { quickMsg: { msg: msg, time: Date.now(), from: deviceId } });
+                showQuickToast(msg, true);
+            }
+        };
+    });
+
+    let toastTimer;
+    function showQuickToast(msg, isMe = false) {
+        const toast = document.getElementById('quick-msg-toast');
+        toast.innerText = (isMe ? "أنت: " : "الخصم: ") + msg;
+        toast.classList.add('show');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => toast.classList.remove('show'), 2500);
+    }
+
+    // ---------------- منطق X-O ----------------
     let localBoard = ["","","","","","","","",""];
     let xoActive = true;
     const xoCells = document.querySelectorAll('.cell');
@@ -497,15 +544,13 @@
         return b.includes("") ? null : "draw";
     }
 
-    // AI Logic
     function resetLocalGames() {
         if(activeGame === 'xo') {
             localBoard = ["","","","","","","","",""]; xoActive = true;
             xoCells.forEach(c => { c.innerText = ""; c.className = 'cell'; });
-            statusBar.innerText = "دورك باللعب (X)";
+            statusBar.innerText = "العب يا بطل (X)";
         } else {
-            document.getElementById('rps-my-move').innerText = "❔";
-            document.getElementById('rps-enemy-move').innerText = "❔";
+            document.getElementById('rps-my-move').innerText = "❔"; document.getElementById('rps-enemy-move').innerText = "❔";
             document.querySelectorAll('.rps-btn').forEach(b => b.classList.remove('selected'));
             statusBar.innerText = "اختر حركتك!"; rpsActive = true;
         }
@@ -517,28 +562,38 @@
             let idx = empty[Math.floor(Math.random() * empty.length)];
             localBoard[idx] = "O"; renderXOCell(idx, "O");
             let res = checkWin(localBoard);
-            if(res) { statusBar.innerText = res==="draw"?"تعادل! 🤝":"الكمبيوتر فاز!"; xoActive = false; setTimeout(resetLocalGames, 1500); }
-            else statusBar.innerText = "دورك باللعب (X)";
+            if(res) { 
+                xoActive = false;
+                if(res==="draw") statusBar.innerText = "تعادل! 🤝";
+                else { statusBar.innerText = "الكمبيوتر فاز!"; enemyScore++; updateScoreUI(); hapticFeedback('heavy'); }
+                setTimeout(resetLocalGames, 1500); 
+            }
+            else statusBar.innerText = "العب يا بطل (X)";
         }
     }
 
+    // Fix click listeners (no multiple binding)
     xoCells.forEach(cell => {
         cell.onclick = () => {
             const idx = cell.getAttribute('data-index');
             if (playMode === 'ai' && xoActive && localBoard[idx] === "") {
-                localBoard[idx] = "X"; renderXOCell(idx, "X");
+                localBoard[idx] = "X"; renderXOCell(idx, "X"); hapticFeedback('light');
                 let res = checkWin(localBoard);
-                if(res) { statusBar.innerText = res==="draw"?"تعادل! 🤝":"فزت! 🎉"; xoActive = false; setTimeout(resetLocalGames, 1500); }
+                if(res) { 
+                    xoActive = false; 
+                    if(res==="draw") statusBar.innerText = "تعادل! 🤝"; 
+                    else { statusBar.innerText = "عاش فزت! 🎉"; myScore++; updateScoreUI(); hapticFeedback('heavy'); }
+                    setTimeout(resetLocalGames, 1500); 
+                }
                 else { statusBar.innerText = "دور الكمبيوتر..."; setTimeout(botXOMove, 500); }
             } 
             else if (playMode === 'online' && currentRoomCode) {
-                // Online XO Logic
                 get(roomRef).then((snap) => {
                     const state = snap.val().xoState;
                     if (state.turn === onlineXO_Symbol && state.board[idx] === "") {
                         state.board[idx] = onlineXO_Symbol;
                         state.turn = onlineXO_Symbol === "X" ? "O" : "X";
-                        update(roomRef, { xoState: state });
+                        update(roomRef, { xoState: state }); hapticFeedback('light');
                     }
                 });
             }
@@ -547,27 +602,25 @@
 
     function syncXO(state) {
         state.board.forEach((val, i) => renderXOCell(i, val));
-        
         let res = checkWin(state.board);
         if(res) {
-            statusBar.innerText = res === "draw" ? "النتيجة تعادل! 🤝" : `اللاعب (${res}) فاز! 🎉`;
-            if(myRole === 'p1') {
-                setTimeout(() => update(roomRef, { xoState: { board: ["","","","","","","","",""], turn: 'X' } }), 2500);
+            if(res === "draw") { statusBar.innerText = "النتيجة تعادل! 🤝"; }
+            else {
+                if(res === onlineXO_Symbol) { statusBar.innerText = "عاش فزت! 🎉"; myScore++; hapticFeedback('heavy'); }
+                else { statusBar.innerText = "الخصم فاز!"; enemyScore++; hapticFeedback('heavy'); }
+                updateScoreUI();
             }
+            if(myRole === 'p1') { setTimeout(() => update(roomRef, { xoState: { board: ["","","","","","","","",""], turn: 'X' } }), 2000); }
         } else {
-            statusBar.innerText = state.turn === onlineXO_Symbol ? `إلعب، دورك! (${onlineXO_Symbol})` : `انتظر دور الخصم...`;
+            if(state.turn === onlineXO_Symbol) { statusBar.innerText = `دورك! العب (${onlineXO_Symbol})`; hapticFeedback('light'); }
+            else { statusBar.innerText = `انتظر لعب الخصم...`; }
         }
     }
 
-    function renderXOCell(idx, sym) {
-        xoCells[idx].innerText = sym;
-        xoCells[idx].className = 'cell ' + (sym ? sym.toLowerCase() : '');
-    }
+    function renderXOCell(idx, sym) { xoCells[idx].innerText = sym; xoCells[idx].className = 'cell ' + (sym ? sym.toLowerCase() : ''); }
 
     // ---------------- منطق حجرة ورقة مقص ----------------
-    let rpsActive = true;
-    const rpsBtns = document.querySelectorAll('.rps-btn');
-    const rpsOptions = ["✊", "✋", "✌️"];
+    let rpsActive = true; const rpsBtns = document.querySelectorAll('.rps-btn'); const rpsOptions = ["✊", "✋", "✌️"];
     
     function resolveRPS(p1, p2) {
         if(p1 === p2) return "draw";
@@ -579,29 +632,24 @@
         btn.onclick = () => {
             if(!rpsActive) return;
             const myChoice = btn.getAttribute('data-choice');
+            hapticFeedback('light');
             
             if (playMode === 'ai') {
-                rpsBtns.forEach(b => b.classList.remove('selected'));
-                btn.classList.add('selected');
+                rpsBtns.forEach(b => b.classList.remove('selected')); btn.classList.add('selected');
                 document.getElementById('rps-my-move').innerText = myChoice;
-                
                 let botChoice = rpsOptions[Math.floor(Math.random()*3)];
                 document.getElementById('rps-enemy-move').innerText = botChoice;
                 
                 let res = resolveRPS(myChoice, botChoice);
                 if(res === "draw") statusBar.innerText = "تعادل!";
-                else if(res === "p1") statusBar.innerText = "فزت! 🎉";
-                else statusBar.innerText = "خسرت!";
-                
-                rpsActive = false;
-                setTimeout(resetLocalGames, 2000);
+                else if(res === "p1") { statusBar.innerText = "فزت! 🎉"; myScore++; hapticFeedback('heavy'); }
+                else { statusBar.innerText = "خسرت!"; enemyScore++; hapticFeedback('heavy'); }
+                updateScoreUI(); rpsActive = false; setTimeout(resetLocalGames, 2000);
             } 
             else if (playMode === 'online' && currentRoomCode) {
-                rpsBtns.forEach(b => b.classList.remove('selected'));
-                btn.classList.add('selected');
+                rpsBtns.forEach(b => b.classList.remove('selected')); btn.classList.add('selected');
                 document.getElementById('rps-my-move').innerText = myChoice;
                 statusBar.innerText = "في انتظار اختيار الخصم...";
-                
                 update(roomRef, { [`rpsState/${myRole}Choice`]: myChoice });
             }
         };
@@ -609,48 +657,58 @@
 
     function syncRPS(state) {
         if(!state.p1Choice && !state.p2Choice) {
-            // Reset state
-            document.getElementById('rps-my-move').innerText = "❔";
-            document.getElementById('rps-enemy-move').innerText = "❔";
-            rpsBtns.forEach(b => b.classList.remove('selected'));
-            statusBar.innerText = "اختر حركتك!";
+            document.getElementById('rps-my-move').innerText = "❔"; document.getElementById('rps-enemy-move').innerText = "❔";
+            rpsBtns.forEach(b => b.classList.remove('selected')); statusBar.innerText = "اختر حركتك!";
         }
         else if (state.p1Choice && state.p2Choice) {
-            // Both selected
             const myC = myRole === 'p1' ? state.p1Choice : state.p2Choice;
             const enC = myRole === 'p1' ? state.p2Choice : state.p1Choice;
-            
-            document.getElementById('rps-my-move').innerText = myC;
-            document.getElementById('rps-enemy-move').innerText = enC;
+            document.getElementById('rps-my-move').innerText = myC; document.getElementById('rps-enemy-move').innerText = enC;
             
             let res = resolveRPS(state.p1Choice, state.p2Choice);
             if (res === "draw") statusBar.innerText = "تعادل!";
-            else if (res === myRole) statusBar.innerText = "أنت الفائز! 🎉";
-            else statusBar.innerText = "الخصم فاز!";
+            else if (res === myRole) { statusBar.innerText = "أنت الفائز! 🎉"; myScore++; hapticFeedback('heavy'); }
+            else { statusBar.innerText = "الخصم فاز!"; enemyScore++; hapticFeedback('heavy'); }
             
-            if (myRole === 'p1') {
-                setTimeout(() => update(roomRef, { rpsState: { p1Choice: "", p2Choice: "" } }), 3000);
-            }
+            updateScoreUI();
+            if (myRole === 'p1') { setTimeout(() => update(roomRef, { rpsState: { p1Choice: "", p2Choice: "" } }), 2500); }
         }
-        else if ((myRole==='p1' && state.p1Choice) || (myRole==='p2' && state.p2Choice)) {
-            statusBar.innerText = "في انتظار الخصم...";
-        }
-        else {
-            statusBar.innerText = "الخصم اختار، دورك!";
-        }
+        else if ((myRole==='p1' && state.p1Choice) || (myRole==='p2' && state.p2Choice)) { statusBar.innerText = "في انتظار الخصم..."; }
+        else { statusBar.innerText = "الخصم اختار، دورك!"; hapticFeedback('light'); }
     }
 
-
     // ==========================================
-    // محرك الشات (يحتفظ بكود nada_mohamed_v2)
+    // محرك الشات و "جاري الكتابة..."
     // ==========================================
     const chatRef = ref(db, 'nada_mohamed_v2'); 
+    const typingRef = ref(db, 'nada_mohamed_v2_typing');
     const chatInput = document.getElementById('chat-input');
     const sendBtn = document.getElementById('send-btn');
     const chatContainer = document.getElementById('chat-messages');
 
     let replyToData = null; 
     document.getElementById('cancel-reply').onclick = () => { replyToData = null; document.getElementById('reply-indicator').style.display = 'none'; };
+
+    // مؤشر جاري الكتابة
+    let typingTimer;
+    chatInput.addEventListener('input', () => {
+        set(ref(db, 'nada_mohamed_v2_typing/' + deviceId), { name: selectedUser, time: Date.now() });
+        clearTimeout(typingTimer);
+        typingTimer = setTimeout(() => remove(ref(db, 'nada_mohamed_v2_typing/' + deviceId)), 1500);
+    });
+    
+    // عند قفل الموقع يمسح حالة الكتابة
+    onDisconnect(ref(db, 'nada_mohamed_v2_typing/' + deviceId)).remove();
+
+    onValue(typingRef, (snap) => {
+        const data = snap.val();
+        let isOtherTyping = false;
+        if(data) {
+            Object.keys(data).forEach(key => { if(key !== deviceId && data[key].time > Date.now() - 3000) isOtherTyping = true; });
+        }
+        document.getElementById('typing-indicator').style.display = isOtherTyping ? 'block' : 'none';
+        document.getElementById('current-user-display').style.display = isOtherTyping ? 'none' : 'block';
+    });
 
     function sendMsg() {
         const text = chatInput.value.trim();
@@ -663,6 +721,7 @@
             if (replyToData) msgPayload.replyTo = replyToData;
             push(chatRef, msgPayload);
             chatInput.value = ''; document.getElementById('cancel-reply').click();
+            remove(ref(db, 'nada_mohamed_v2_typing/' + deviceId)); // مسح حالة الكتابة بعد الإرسال
         }
     }
     sendBtn.onclick = sendMsg;
@@ -679,6 +738,9 @@
         const bubble = document.createElement('div'); bubble.className = 'message-bubble';
         bubble.innerHTML = `${nameHtml}${replyHtml}<div>${data.msg}</div><div class="message-footer"><span>${data.time || ''}</span>${isMe ? '<span class="ticks" style="color:#00f2fe;font-size:12px;margin-right:3px;">✓✓</span>' : ''}</div>`;
         
+        // اهتزاز عند استلام رسالة جديدة
+        if(!isMe) hapticFeedback('light');
+
         let tapTimeout, lastTap = 0;
         const triggerReply = (e) => {
             if(e) e.preventDefault();
