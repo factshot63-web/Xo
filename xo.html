@@ -6,25 +6,25 @@
     <title>X-O Ultra & Secret Chat</title>
     <!-- إعدادات PWA وشريط الحالة للآيفون -->
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#0d0e15">
+    <meta name="theme-color" content="#0b0c10">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="icon-192x192.png">
     
     <style>
         :root {
-            --bg-color: #0b0c10;
-            --card-bg: rgba(23, 27, 38, 0.75);
-            --primary: #ff2a5f;
-            --primary-glow: rgba(255, 42, 95, 0.4);
-            --accent: #00f2fe;
-            --accent-glow: rgba(0, 242, 254, 0.35);
+            --bg-main: #0a0b10;
+            --card-glass: rgba(22, 26, 38, 0.75);
+            --primary-grad: linear-gradient(135deg, #00c6ff, #0072ff);
+            --secondary-grad: linear-gradient(135deg, #ff2a5f, #ff758c);
+            --sent-bubble: linear-gradient(135deg, #005c4b, #00866c);
+            --received-bubble: rgba(30, 36, 51, 0.85);
             --text-main: #ffffff;
-            --text-sub: #a0a5ba;
-            --board-cell: #131722;
+            --text-sub: #949aaf;
+            --accent-glow: rgba(0, 198, 255, 0.35);
         }
 
-        /* منع التكبير والتقريب على الآيفون واللمس */
+        /* منع التكبير والتفاعل السلس جداً */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -36,7 +36,7 @@
         }
 
         body {
-            background: radial-gradient(circle at top, #1a1d29 0%, #0b0c10 100%);
+            background: radial-gradient(circle at top, #141824 0%, #08090d 100%);
             color: var(--text-main);
             display: flex;
             justify-content: center;
@@ -47,42 +47,42 @@
             padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
         }
 
-        /* حاوية التطبيق الزجاجية */
         .app-container {
             width: 100%;
             max-width: 440px;
             height: 100vh;
-            max-height: 900px;
-            background: var(--card-bg);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
+            max-height: 920px;
+            background: var(--card-glass);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
             border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 28px;
+            border-radius: 32px;
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
+            box-shadow: 0 30px 70px rgba(0, 0, 0, 0.7);
             position: relative;
         }
 
-        /* Animations */
-        @keyframes popIn { 0% { transform: scale(0.9); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
-        @keyframes pulseNeon { 0%, 100% { box-shadow: 0 0 15px var(--primary-glow); } 50% { box-shadow: 0 0 30px var(--primary-glow); } }
-
-        /* header */
-        .header {
-            padding: 20px;
-            text-align: center;
-            font-size: 22px;
-            font-weight: 800;
-            letter-spacing: 1px;
-            background: linear-gradient(135deg, #ff2a5f, #00f2fe);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
+        @keyframes springUp {
+            0% { transform: translateY(20px) scale(0.95); opacity: 0; }
+            100% { transform: translateY(0) scale(1); opacity: 1; }
         }
 
-        /* قسم اللعبة */
+        /* Header */
+        .header {
+            padding: 18px;
+            text-align: center;
+            font-size: 20px;
+            font-weight: 900;
+            letter-spacing: 1.5px;
+            background: linear-gradient(135deg, #00c6ff, #ff2a5f);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        /* Game Section */
         #game-section {
             flex: 1;
             display: flex;
@@ -90,13 +90,13 @@
             align-items: center;
             justify-content: center;
             padding: 20px;
-            animation: popIn 0.5s ease-out;
+            animation: springUp 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
         .mode-title {
             font-size: 14px;
             color: var(--text-sub);
-            margin-bottom: 15px;
+            margin-bottom: 20px;
             font-weight: 500;
         }
 
@@ -105,161 +105,260 @@
             grid-template-columns: repeat(3, 1fr);
             gap: 12px;
             width: 100%;
-            max-width: 330px;
+            max-width: 320px;
             aspect-ratio: 1;
-            background: rgba(0, 0, 0, 0.25);
+            background: rgba(0, 0, 0, 0.3);
             padding: 14px;
             border-radius: 24px;
             border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
         .cell {
-            background: var(--board-cell);
-            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 18px;
             display: flex;
             justify-content: center;
             align-items: center;
             font-size: 42px;
             font-weight: 900;
             cursor: pointer;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            border: 1px solid rgba(255, 255, 255, 0.03);
-            box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.02);
+            transition: all 0.2s ease;
+            border: 1px solid rgba(255, 255, 255, 0.04);
         }
 
-        .cell:active { transform: scale(0.95); }
-        .cell.x { color: var(--primary); text-shadow: 0 0 15px var(--primary-glow); }
-        .cell.o { color: var(--accent); text-shadow: 0 0 15px var(--accent-glow); }
+        .cell:active { transform: scale(0.92); }
+        .cell.x { color: #00c6ff; text-shadow: 0 0 15px rgba(0, 198, 255, 0.5); }
+        .cell.o { color: #ff2a5f; text-shadow: 0 0 15px rgba(255, 42, 95, 0.5); }
 
         .status-bar {
             margin-top: 25px;
-            font-size: 18px;
+            font-size: 17px;
             font-weight: 700;
-            min-height: 28px;
+            min-height: 25px;
             color: var(--text-main);
         }
 
-        /* نافذة السر المنبثقة */
+        /* Modal Overlay */
         .modal-overlay {
             display: none;
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(10, 11, 16, 0.88);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
+            background: rgba(6, 7, 10, 0.92);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             justify-content: center;
             align-items: center;
             z-index: 100;
-            animation: popIn 0.3s ease-out;
+            animation: springUp 0.3s ease;
         }
 
         .modal-card {
             width: 85%;
-            background: rgba(28, 33, 48, 0.9);
-            border: 1px solid rgba(255, 42, 95, 0.3);
-            border-radius: 24px;
-            padding: 25px 20px;
+            background: rgba(25, 30, 45, 0.95);
+            border: 1px solid rgba(0, 198, 255, 0.3);
+            border-radius: 28px;
+            padding: 28px 22px;
             text-align: center;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.6);
         }
 
-        .modal-card h3 { font-size: 20px; margin-bottom: 10px; color: var(--text-main); }
+        .modal-card h3 { font-size: 22px; margin-bottom: 8px; color: var(--text-main); }
         .modal-card p { font-size: 13px; color: var(--text-sub); margin-bottom: 20px; }
 
         .modal-card input {
             width: 100%;
-            padding: 14px;
-            border-radius: 14px;
+            padding: 15px;
+            border-radius: 16px;
             border: 1px solid rgba(255,255,255,0.1);
-            background: rgba(0,0,0,0.3);
+            background: rgba(0,0,0,0.4);
             color: #fff;
-            font-size: 16px;
+            font-size: 18px;
             text-align: center;
             outline: none;
-            margin-bottom: 15px;
+            margin-bottom: 18px;
             user-select: text;
         }
 
         .modal-card button {
             width: 100%;
-            padding: 14px;
-            border-radius: 14px;
+            padding: 15px;
+            border-radius: 16px;
             border: none;
-            background: linear-gradient(135deg, var(--primary), #d81b60);
+            background: var(--primary-grad);
             color: white;
             font-size: 16px;
-            font-weight: 700;
+            font-weight: 800;
             cursor: pointer;
-            box-shadow: 0 8px 20px var(--primary-glow);
+            box-shadow: 0 10px 25px var(--accent-glow);
         }
 
-        /* قسم الشات السري (ندى ومحمد) */
+        /* Identity Switcher Modal (أنا ندى أم أنا محمد) */
+        .identity-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .identity-btn {
+            flex: 1;
+            padding: 12px;
+            border-radius: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-sub);
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .identity-btn.active {
+            background: var(--primary-grad);
+            color: #fff;
+            border-color: transparent;
+            box-shadow: 0 4px 15px var(--accent-glow);
+        }
+
+        /* Chat Section - WhatsApp Ultra Style */
         #chat-section {
             display: none;
             flex-direction: column;
             height: 100%;
             width: 100%;
-            animation: popIn 0.4s ease-out;
+            animation: springUp 0.4s ease-out;
+            background: radial-gradient(circle at center, rgba(20, 25, 40, 0.5) 0%, rgba(10, 11, 16, 0.9) 100%);
         }
 
         .chat-header {
-            padding: 18px;
-            background: rgba(18, 21, 31, 0.8);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 16px 20px;
+            background: rgba(18, 22, 32, 0.9);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
             display: flex;
             align-items: center;
-            justify-content: center;
-            gap: 10px;
+            justify-content: space-between;
         }
 
-        .chat-header h2 {
-            font-size: 18px;
-            font-weight: 700;
-            background: linear-gradient(135deg, #ff2a5f, #00f2fe);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+        .chat-title-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .chat-avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ff2a5f, #00c6ff);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 20px;
+            box-shadow: 0 4px 12px rgba(0, 198, 255, 0.3);
+        }
+
+        .chat-info h2 { font-size: 17px; font-weight: 800; color: #fff; }
+        .chat-info p { font-size: 11px; color: #00c6ff; }
+
+        .switch-user-btn {
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: var(--text-sub);
+            padding: 6px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
         }
 
         .chat-messages {
             flex: 1;
-            padding: 20px;
+            padding: 20px 16px;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 14px;
             scroll-behavior: smooth;
         }
 
-        .message-bubble {
-            max-width: 78%;
-            padding: 12px 16px;
-            border-radius: 20px;
-            font-size: 15px;
-            line-height: 1.4;
-            word-break: break-word;
-            user-select: text;
-            animation: popIn 0.25s ease-out;
-            background: rgba(255, 255, 255, 0.07);
-            color: var(--text-main);
-            align-self: flex-start;
-            border-bottom-right-radius: 4px;
-            border: 1px solid rgba(255, 255, 255, 0.04);
+        /* كبسولات الرسائل للطرفين */
+        .message-row {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
         }
 
-        .chat-input-container {
-            padding: 15px 15px calc(15px + env(safe-area-inset-bottom));
-            background: rgba(18, 21, 31, 0.95);
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        /* رسائلي - يمين */
+        .message-row.me {
+            align-items: flex-start; /* للواجهة العربية: اليمين هو البداية */
+        }
+
+        .message-row.me .message-bubble {
+            background: var(--sent-bubble);
+            color: #ffffff;
+            border-radius: 20px 20px 4px 20px;
+            box-shadow: 0 4px 15px rgba(0, 134, 108, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* رسائل الطرف الآخر - يسار */
+        .message-row.other {
+            align-items: flex-end; /* للواجهة العربية: اليسار هو النهاية */
+        }
+
+        .message-row.other .message-bubble {
+            background: var(--received-bubble);
+            color: #e0e6ed;
+            border-radius: 20px 20px 20px 4px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .message-bubble {
+            max-width: 82%;
+            padding: 10px 14px 8px 14px;
+            font-size: 15px;
+            line-height: 1.45;
+            word-break: break-word;
+            user-select: text;
+            position: relative;
+            animation: springUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .sender-name {
+            font-size: 11px;
+            font-weight: 800;
+            margin-bottom: 4px;
+            color: #00c6ff;
+        }
+
+        .message-footer {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 4px;
+            margin-top: 4px;
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.65);
+        }
+
+        .ticks {
+            color: #00f2fe;
+            font-weight: bold;
+            font-size: 12px;
+        }
+
+        /* شريط الإدخال الفاخر */
+        .chat-input-area {
+            padding: 12px 14px calc(12px + env(safe-area-inset-bottom));
+            background: rgba(16, 20, 30, 0.95);
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
             display: flex;
             gap: 10px;
             align-items: center;
         }
 
-        .chat-input-container input {
+        .chat-input-area input {
             flex: 1;
-            padding: 12px 18px;
-            border-radius: 25px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 13px 18px;
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
             background: rgba(0, 0, 0, 0.4);
             color: white;
             font-size: 15px;
@@ -267,20 +366,27 @@
             user-select: text;
         }
 
-        .chat-input-container button {
-            width: 44px;
-            height: 44px;
+        .chat-input-area input:focus {
+            border-color: #00c6ff;
+        }
+
+        .chat-input-area button {
+            width: 46px;
+            height: 46px;
             border-radius: 50%;
             border: none;
-            background: linear-gradient(135deg, var(--primary), #00f2fe);
+            background: var(--primary-grad);
             color: white;
             display: flex;
             justify-content: center;
             align-items: center;
             cursor: pointer;
-            box-shadow: 0 4px 15px var(--primary-glow);
+            box-shadow: 0 4px 15px var(--accent-glow);
             flex-shrink: 0;
+            transition: transform 0.2s;
         }
+
+        .chat-input-area button:active { transform: scale(0.9); }
     </style>
 </head>
 <body>
@@ -290,7 +396,7 @@
 
     <!-- قسم اللعبة -->
     <div id="game-section">
-        <div class="mode-title">العب الآن ضد الذكاء الاصطناعي 🤖</div>
+        <div class="mode-title">التحدي ضد الذكاء الاصطناعي 🤖</div>
         
         <div class="board" id="board">
             <div class="cell" data-index="0"></div>
@@ -307,27 +413,42 @@
         <div class="status-bar" id="status-bar">دورك باللعب (X)</div>
     </div>
 
-    <!-- النافذة السرية -->
+    <!-- النافذة السرية واختيار الهوية -->
     <div class="modal-overlay" id="secret-modal">
         <div class="modal-card">
-            <h3>منطقة خاصة 🔒</h3>
-            <p>أدخل الكود السري للوصول لغرفة الدردشة الخاصة</p>
+            <h3>منطقة ندى ومحمد 🔒</h3>
+            <p>اختر حسابك وأدخل الكود السري للدخول</p>
+            
+            <div class="identity-selector">
+                <button class="identity-btn active" id="select-nada">ندى</button>
+                <button class="identity-btn" id="select-mohamed">محمد</button>
+            </div>
+
             <input type="password" id="secret-input" placeholder="••••••••">
             <button id="verify-btn">دخول المحادثة</button>
-            <div id="error-msg" style="color: #ff2a5f; font-size: 12px; margin-top: 10px; display: none;">الرمز غير صحيح!</div>
+            <div id="error-msg" style="color: #ff2a5f; font-size: 13px; margin-top: 12px; display: none;">الرمز غير صحيح!</div>
         </div>
     </div>
 
-    <!-- قسم الشات السري (ندى ومحمد) -->
+    <!-- قسم الشات السري الاحترافي -->
     <div id="chat-section">
         <div class="chat-header">
-            <h2>ندى ومحمد ❤️</h2>
+            <div class="chat-title-group">
+                <div class="chat-avatar">❤️</div>
+                <div class="chat-info">
+                    <h2>ندى ومحمد</h2>
+                    <p id="current-user-display">متصل الآن</p>
+                </div>
+            </div>
+            <button class="switch-user-btn" id="switch-user-btn">تبديل الحساب</button>
         </div>
+
         <div class="chat-messages" id="chat-messages">
-            <!-- Messages appear here -->
+            <!-- الرسائل تظهر هنا من الطرفين -->
         </div>
-        <div class="chat-input-container">
-            <input type="text" id="chat-input" placeholder="اكتب رسالة هنا...">
+
+        <div class="chat-input-area">
+            <input type="text" id="chat-input" placeholder="اكتب رسالة...">
             <button id="send-btn">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
             </button>
@@ -359,10 +480,42 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
-    const chatRef = ref(db, 'nada_and_mohamed_chat');
+    const chatRef = ref(db, 'nada_mohamed_v2');
 
     // ==========================================
-    // منطق الضغط السريع للتفعيل السرّي (على اللوحة والأزرار)
+    // إدارة الهوية و معرّف الجهاز (Device ID)
+    // ==========================================
+    let deviceId = localStorage.getItem('app_device_id');
+    if (!deviceId) {
+        deviceId = 'dev_' + Math.random().toString(36).substring(2, 9);
+        localStorage.setItem('app_device_id', deviceId);
+    }
+
+    let selectedUser = localStorage.getItem('chat_username') || 'ندى';
+
+    const btnNada = document.getElementById('select-nada');
+    const btnMohamed = document.getElementById('select-mohamed');
+
+    function updateIdentityButtons() {
+        if (selectedUser === 'ندى') {
+            btnNada.classList.add('active');
+            btnMohamed.classList.remove('active');
+        } else {
+            btnMohamed.classList.add('active');
+            btnNada.classList.remove('active');
+        }
+    }
+    updateIdentityButtons();
+
+    btnNada.addEventListener('click', () => { selectedUser = 'ندى'; updateIdentityButtons(); });
+    btnMohamed.addEventListener('click', () => { selectedUser = 'محمد'; updateIdentityButtons(); });
+
+    document.getElementById('switch-user-btn').addEventListener('click', () => {
+        document.getElementById('secret-modal').style.display = 'flex';
+    });
+
+    // ==========================================
+    // التفعيل السري (3 ضغطات)
     // ==========================================
     let clickCount = 0;
     let clickTimer = null;
@@ -376,22 +529,18 @@
             clickCount = 0;
         }
 
-        clickTimer = setTimeout(() => {
-            clickCount = 0;
-        }, 1200);
+        clickTimer = setTimeout(() => { clickCount = 0; }, 1200);
     };
 
-    // تفعيل الضغط على عنوان الهيدر ولوحة اللعب بدون تداخل
     document.getElementById('secret-trigger-header').addEventListener('click', registerSecretTouch);
-    document.getElementById('board').addEventListener('click', (e) => {
-        // إذا ضغط بسرعة في الأطراف أو المربعات
-        registerSecretTouch();
-    });
+    document.getElementById('board').addEventListener('click', registerSecretTouch);
 
-    // التحقق من الرقم السري
+    // التحقق من كلمة السر
     document.getElementById('verify-btn').addEventListener('click', () => {
         const input = document.getElementById('secret-input').value;
         if (input === "Homos77#") {
+            localStorage.setItem('chat_username', selectedUser);
+            document.getElementById('current-user-display').innerText = `أنت الآن: ${selectedUser}`;
             document.getElementById('secret-modal').style.display = 'none';
             document.getElementById('game-section').style.display = 'none';
             document.getElementById('chat-section').style.display = 'flex';
@@ -403,7 +552,7 @@
     });
 
     // ==========================================
-    // منطق اللعبة X-O ضد الكمبيوتر
+    // لعبة X-O
     // ==========================================
     let board = ["", "", "", "", "", "", "", "", ""];
     let player = "X";
@@ -424,9 +573,7 @@
             const idx = cell.getAttribute('data-index');
             if (board[idx] === "" && active) {
                 playTurn(idx, player);
-                if (active) {
-                    setTimeout(botMove, 400);
-                }
+                if (active) setTimeout(botMove, 400);
             }
         });
     });
@@ -439,9 +586,9 @@
     }
 
     function botMove() {
-        let emptyIndices = board.map((val, i) => val === "" ? i : null).filter(v => v !== null);
-        if (emptyIndices.length > 0) {
-            let choice = emptyIndices[Math.floor(Math.random() * emptyIndices.length)];
+        let empty = board.map((v, i) => v === "" ? i : null).filter(v => v !== null);
+        if (empty.length > 0) {
+            let choice = empty[Math.floor(Math.random() * empty.length)];
             playTurn(choice, computer);
         }
     }
@@ -451,22 +598,16 @@
         for (let pattern of winPatterns) {
             const [a, b, c] = pattern;
             if (board[a] && board[a] === board[b] && board[a] === board[c]) {
-                won = true;
-                break;
+                won = true; break;
             }
         }
-
         if (won) {
-            statusBar.innerText = "انتهت اللعبة بالفوز! 🎉";
-            active = false;
-            setTimeout(resetGame, 2200);
-            return;
+            statusBar.innerText = "فوز رائع! 🎉"; active = false;
+            setTimeout(resetGame, 2000); return;
         }
-
         if (!board.includes("")) {
-            statusBar.innerText = "تعادل ممتاز! 🤝";
-            active = false;
-            setTimeout(resetGame, 2200);
+            statusBar.innerText = "تعادل! 🤝"; active = false;
+            setTimeout(resetGame, 2000);
         }
     }
 
@@ -474,41 +615,62 @@
         board = ["", "", "", "", "", "", "", "", ""];
         active = true;
         statusBar.innerText = "دورك باللعب (X)";
-        cells.forEach(c => {
-            c.innerText = "";
-            c.classList.remove('x', 'o');
-        });
+        cells.forEach(c => { c.innerText = ""; c.classList.remove('x', 'o'); });
     }
 
     // ==========================================
-    // شات "ندى ومحمد" السريع واللحظي
+    // محرك الشات المزدوج (WhatsApp 2-Sided Engine)
     // ==========================================
     const chatInput = document.getElementById('chat-input');
     const sendBtn = document.getElementById('send-btn');
     const chatContainer = document.getElementById('chat-messages');
 
     sendBtn.addEventListener('click', sendMsg);
-    chatInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') sendMsg();
-    });
+    chatInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMsg(); });
 
     function sendMsg() {
         const text = chatInput.value.trim();
         if (text) {
+            const now = new Date();
+            const timeFormatted = now.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
+
             push(chatRef, {
+                senderId: deviceId,
+                senderName: selectedUser,
                 msg: text,
-                time: serverTimestamp()
+                time: timeFormatted,
+                timestamp: serverTimestamp()
             });
             chatInput.value = '';
         }
     }
 
+    // استلام وعرض الرسائل من الطرفين
     onChildAdded(chatRef, (snapshot) => {
         const data = snapshot.val();
+        const isMe = (data.senderId === deviceId) || (data.senderName === selectedUser);
+
+        const row = document.createElement('div');
+        row.className = `message-row ${isMe ? 'me' : 'other'}`;
+
         const bubble = document.createElement('div');
         bubble.className = 'message-bubble';
-        bubble.innerText = data.msg;
-        chatContainer.appendChild(bubble);
+
+        // عرض اسم الراسل لو الرسالة جاية من الطرف الآخر
+        let nameHtml = !isMe ? `<div class="sender-name">${data.senderName || 'الطرف الآخر'}</div>` : '';
+        let ticksHtml = isMe ? `<span class="ticks">✓✓</span>` : '';
+
+        bubble.innerHTML = `
+            ${nameHtml}
+            <div>${data.msg}</div>
+            <div class="message-footer">
+                <span>${data.time || ''}</span>
+                ${ticksHtml}
+            </div>
+        `;
+
+        row.appendChild(bubble);
+        chatContainer.appendChild(row);
         chatContainer.scrollTop = chatContainer.scrollHeight;
     });
 </script>
