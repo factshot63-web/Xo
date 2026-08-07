@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>X-O Ultra & Secret Chat</title>
-    <!-- إعدادات PWA وشريط الحالة للآيفون -->
+    <title>X-O & More | Secret Chat</title>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0b0c10">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -24,44 +23,23 @@
             --accent-glow: rgba(0, 198, 255, 0.35);
         }
 
-        /* منع التكبير والتفاعل السلس جداً */
         * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            touch-action: manipulation;
-            -webkit-tap-highlight-color: transparent;
-            user-select: none;
+            box-sizing: border-box; margin: 0; padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            touch-action: manipulation; -webkit-tap-highlight-color: transparent; user-select: none;
         }
 
         body {
             background: radial-gradient(circle at top, #141824 0%, #08090d 100%);
-            color: var(--text-main);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            min-height: -webkit-fill-available;
-            overflow: hidden;
-            padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+            color: var(--text-main); display: flex; justify-content: center; align-items: center;
+            min-height: 100vh; min-height: -webkit-fill-available; overflow: hidden;
         }
 
         .app-container {
-            width: 100%;
-            max-width: 440px;
-            height: 100vh;
-            max-height: 920px;
-            background: var(--card-glass);
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 32px;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            box-shadow: 0 30px 70px rgba(0, 0, 0, 0.7);
-            position: relative;
+            width: 100%; max-width: 440px; height: 100vh; max-height: 920px;
+            background: var(--card-glass); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 32px;
+            display: flex; flex-direction: column; overflow: hidden; position: relative;
         }
 
         @keyframes springUp {
@@ -69,250 +47,147 @@
             100% { transform: translateY(0) scale(1); opacity: 1; }
         }
 
-        /* Header */
         .header {
-            padding: 18px;
-            text-align: center;
-            font-size: 20px;
-            font-weight: 900;
-            letter-spacing: 1.5px;
-            background: linear-gradient(135deg, #00c6ff, #ff2a5f);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-left: 20px;
-            padding-right: 20px;
+            padding: 18px 20px; text-align: center; font-size: 18px; font-weight: 900;
+            background: linear-gradient(135deg, #00c6ff, #ff2a5f); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05); display: flex; justify-content: space-between; align-items: center;
         }
 
-        /* Game Section */
+        /* ----- Game Section ----- */
         #game-section {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            animation: springUp 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            position: relative;
+            flex: 1; display: flex; flex-direction: column; position: relative;
+            animation: springUp 0.5s ease; padding-bottom: 70px; /* Space for bottom nav */
         }
 
         .nav-back-chat-btn {
-            display: none;
-            position: absolute;
-            top: 10px;
-            left: 15px;
-            background: rgba(0, 198, 255, 0.15);
-            border: 1px solid rgba(0, 198, 255, 0.3);
-            color: #00c6ff;
-            padding: 6px 14px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: 800;
-            cursor: pointer;
+            position: absolute; top: 10px; left: 15px; background: rgba(0, 198, 255, 0.15);
+            border: 1px solid rgba(0, 198, 255, 0.3); color: #00c6ff; padding: 6px 14px;
+            border-radius: 12px; font-size: 12px; font-weight: 800; cursor: pointer; display: none; z-index: 10;
         }
 
-        /* أزرار اختيار وضع اللعب */
         .game-modes {
-            display: flex; gap: 10px; margin-bottom: 20px; width: 100%; max-width: 320px;
+            display: flex; gap: 10px; margin: 20px auto; width: 90%; max-width: 320px;
         }
         .mode-btn {
             flex: 1; padding: 10px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);
-            background: rgba(255,255,255,0.05); color: var(--text-sub); font-weight: bold;
-            cursor: pointer; transition: 0.3s;
+            background: rgba(255,255,255,0.05); color: var(--text-sub); font-weight: bold; cursor: pointer; transition: 0.3s;
         }
-        .mode-btn.active {
-            background: var(--primary-grad); color: white; border-color: transparent; box-shadow: 0 4px 15px var(--accent-glow);
+        .mode-btn.active { background: var(--primary-grad); color: white; border-color: transparent; }
+
+        /* اللوبي (نظام الغرف) */
+        .lobby-container {
+            display: none; flex-direction: column; align-items: center; justify-content: center;
+            flex: 1; padding: 20px; text-align: center;
         }
-        .online-controls { margin-top: 15px; display: none; }
-        .btn-join {
-            background: var(--secondary-grad); color: white; border: none; padding: 12px 24px;
-            border-radius: 12px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 15px rgba(255, 42, 95, 0.4);
+        .lobby-box {
+            background: rgba(0,0,0,0.4); padding: 20px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05); width: 100%; max-width: 300px; margin-bottom: 15px;
+        }
+        .lobby-box h3 { font-size: 16px; margin-bottom: 15px; color: #fff; }
+        .btn-action {
+            background: var(--secondary-grad); color: white; border: none; padding: 12px; width: 100%;
+            border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 15px;
+        }
+        .room-code-display {
+            font-size: 28px; font-weight: 900; letter-spacing: 4px; color: #00c6ff; margin: 15px 0; user-select: text;
+        }
+        .lobby-input {
+            width: 100%; padding: 12px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.05); color: white; text-align: center; font-size: 16px; margin-bottom: 15px; outline: none; user-select: text;
+        }
+        .lobby-input:focus { border-color: #00c6ff; }
+
+        /* منطقة اللعب (Board Area) */
+        .game-area {
+            flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%;
         }
 
-        .board {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
-            width: 100%;
-            max-width: 320px;
-            aspect-ratio: 1;
-            background: rgba(0, 0, 0, 0.3);
-            padding: 14px;
-            border-radius: 24px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
+        .status-bar { margin: 20px 0; font-size: 17px; font-weight: 700; color: var(--text-main); text-align: center; min-height: 25px; }
 
+        /* X-O */
+        .xo-board {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; width: 90%; max-width: 320px;
+            aspect-ratio: 1; background: rgba(0, 0, 0, 0.3); padding: 14px; border-radius: 24px; border: 1px solid rgba(255,255,255,0.05);
+        }
         .cell {
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: 18px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 42px;
-            font-weight: 900;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            border: 1px solid rgba(255, 255, 255, 0.04);
+            background: rgba(255, 255, 255, 0.03); border-radius: 18px; display: flex; justify-content: center; align-items: center;
+            font-size: 42px; font-weight: 900; cursor: pointer; border: 1px solid rgba(255, 255, 255, 0.04);
         }
-
         .cell:active { transform: scale(0.92); }
         .cell.x { color: #00c6ff; text-shadow: 0 0 15px rgba(0, 198, 255, 0.5); }
         .cell.o { color: #ff2a5f; text-shadow: 0 0 15px rgba(255, 42, 95, 0.5); }
 
-        .status-bar {
-            margin-top: 25px;
-            font-size: 17px;
-            font-weight: 700;
-            min-height: 25px;
-            color: var(--text-main);
-            text-align: center;
+        /* حجرة ورقة مقص (RPS) */
+        .rps-container { display: none; flex-direction: column; align-items: center; width: 100%; }
+        .rps-choices { display: flex; gap: 15px; justify-content: center; margin-top: 20px; }
+        .rps-btn {
+            font-size: 40px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+            width: 80px; height: 80px; border-radius: 20px; display: flex; justify-content: center; align-items: center;
+            cursor: pointer; transition: 0.2s;
         }
+        .rps-btn:active { transform: scale(0.9); background: rgba(255,255,255,0.1); }
+        .rps-btn.selected { background: var(--primary-grad); border-color: transparent; }
+        .rps-battle { display: flex; justify-content: space-around; width: 100%; margin: 30px 0; font-size: 50px; }
+        .rps-player-box { text-align: center; }
+        .rps-player-name { font-size: 12px; color: var(--text-sub); margin-bottom: 5px; }
 
-        /* Modal Overlay */
-        .modal-overlay {
-            display: none;
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(6, 7, 10, 0.92);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            justify-content: center;
-            align-items: center;
-            z-index: 100;
-            animation: springUp 0.3s ease;
+        /* Bottom Navigation Tabs */
+        .bottom-nav {
+            position: absolute; bottom: 0; left: 0; right: 0; background: rgba(18, 22, 32, 0.95);
+            border-top: 1px solid rgba(255,255,255,0.05); display: flex; padding: 10px 15px calc(10px + env(safe-area-inset-bottom));
         }
-
-        .modal-card {
-            width: 85%;
-            background: rgba(25, 30, 45, 0.95);
-            border: 1px solid rgba(0, 198, 255, 0.3);
-            border-radius: 28px;
-            padding: 28px 22px;
-            text-align: center;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.6);
+        .nav-tab {
+            flex: 1; text-align: center; padding: 10px; color: var(--text-sub); font-size: 14px; font-weight: bold;
+            cursor: pointer; border-radius: 15px; transition: 0.3s;
         }
+        .nav-tab.active { background: rgba(255,255,255,0.08); color: #00c6ff; }
 
-        .modal-card h3 { font-size: 22px; margin-bottom: 8px; color: var(--text-main); }
-        .modal-card p { font-size: 13px; color: var(--text-sub); margin-bottom: 20px; }
-
-        .modal-card input {
-            width: 100%; padding: 15px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.1);
-            background: rgba(0,0,0,0.4); color: #fff; font-size: 18px; text-align: center; outline: none; margin-bottom: 18px; user-select: text;
-        }
-
-        .modal-card button {
-            width: 100%; padding: 15px; border-radius: 16px; border: none; background: var(--primary-grad);
-            color: white; font-size: 16px; font-weight: 800; cursor: pointer; box-shadow: 0 10px 25px var(--accent-glow);
-        }
-
-        .identity-selector { display: flex; gap: 10px; margin-bottom: 15px; }
-        .identity-btn {
-            flex: 1; padding: 12px; border-radius: 14px; border: 1px solid rgba(255, 255, 255, 0.1);
-            background: rgba(255, 255, 255, 0.05); color: var(--text-sub); font-weight: 700; cursor: pointer; transition: all 0.2s;
-        }
-        .identity-btn.active {
-            background: var(--primary-grad); color: #fff; border-color: transparent; box-shadow: 0 4px 15px var(--accent-glow);
-        }
-
-        /* Chat Section */
-        #chat-section {
-            display: none; flex-direction: column; height: 100%; width: 100%;
-            animation: springUp 0.4s ease-out; background: radial-gradient(circle at center, rgba(20, 25, 40, 0.5) 0%, rgba(10, 11, 16, 0.9) 100%);
-        }
-
-        .chat-header {
-            padding: 16px 20px; background: rgba(18, 22, 32, 0.9); border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-            display: flex; align-items: center; justify-content: space-between;
-        }
-
+        /* ----- Chat Section ----- */
+        #chat-section { display: none; flex-direction: column; height: 100%; width: 100%; background: radial-gradient(circle at center, rgba(20, 25, 40, 0.5) 0%, rgba(10, 11, 16, 0.9) 100%); }
+        .chat-header { padding: 16px 20px; background: rgba(18, 22, 32, 0.9); border-bottom: 1px solid rgba(255, 255, 255, 0.06); display: flex; align-items: center; justify-content: space-between; }
         .chat-title-group { display: flex; align-items: center; gap: 12px; }
-        .chat-avatar {
-            width: 42px; height: 42px; border-radius: 50%; background: linear-gradient(135deg, #ff2a5f, #00c6ff);
-            display: flex; justify-content: center; align-items: center; font-size: 20px; box-shadow: 0 4px 12px rgba(0, 198, 255, 0.3);
-        }
+        .chat-avatar { width: 42px; height: 42px; border-radius: 50%; background: linear-gradient(135deg, #ff2a5f, #00c6ff); display: flex; justify-content: center; align-items: center; font-size: 20px; }
         .chat-info h2 { font-size: 17px; font-weight: 800; color: #fff; }
         .chat-info p { font-size: 11px; color: #00c6ff; }
-
         .chat-header-actions { display: flex; gap: 8px; }
-
-        .game-toggle-btn {
-            background: var(--primary-grad); color: #fff; border: none;
-            padding: 7px 14px; border-radius: 12px; font-size: 12px; font-weight: 800; cursor: pointer;
-            box-shadow: 0 4px 12px var(--accent-glow);
-        }
-
-        .switch-user-btn {
-            background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1); color: var(--text-sub);
-            padding: 7px 12px; border-radius: 12px; font-size: 12px; font-weight: 600; cursor: pointer;
-        }
-
-        .chat-messages {
-            flex: 1; padding: 20px 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 14px; scroll-behavior: smooth;
-        }
-
+        .game-toggle-btn { background: var(--primary-grad); color: #fff; border: none; padding: 7px 14px; border-radius: 12px; font-size: 12px; font-weight: 800; cursor: pointer; }
+        
+        .chat-messages { flex: 1; padding: 20px 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 14px; }
         .message-row { display: flex; flex-direction: column; width: 100%; }
         .message-row.me { align-items: flex-start; }
-        .message-row.me .message-bubble {
-            background: var(--sent-bubble); color: #ffffff; border-radius: 20px 20px 4px 20px;
-            box-shadow: 0 4px 15px rgba(0, 134, 108, 0.3); border: 1px solid rgba(255, 255, 255, 0.1);
-        }
+        .message-row.me .message-bubble { background: var(--sent-bubble); color: #ffffff; border-radius: 20px 20px 4px 20px; border: 1px solid rgba(255, 255, 255, 0.1); }
         .message-row.other { align-items: flex-end; }
-        .message-row.other .message-bubble {
-            background: var(--received-bubble); color: #e0e6ed; border-radius: 20px 20px 20px 4px;
-            border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-        }
-        .message-bubble {
-            max-width: 82%; padding: 10px 14px 8px 14px; font-size: 15px; line-height: 1.45; word-break: break-word;
-            user-select: text; position: relative; animation: springUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
+        .message-row.other .message-bubble { background: var(--received-bubble); color: #e0e6ed; border-radius: 20px 20px 20px 4px; border: 1px solid rgba(255, 255, 255, 0.08); }
+        .message-bubble { max-width: 82%; padding: 10px 14px 8px 14px; font-size: 15px; line-height: 1.45; word-break: break-word; user-select: text; }
         .sender-name { font-size: 11px; font-weight: 800; margin-bottom: 4px; color: #00c6ff; }
         .message-footer { display: flex; align-items: center; justify-content: flex-end; gap: 4px; margin-top: 4px; font-size: 10px; color: rgba(255, 255, 255, 0.65); }
-        .ticks { color: #00f2fe; font-weight: bold; font-size: 12px; }
+        
+        .quoted-msg { background: rgba(0, 0, 0, 0.25); border-right: 4px solid #00c6ff; padding: 6px 10px; border-radius: 8px; font-size: 13px; margin-bottom: 6px; color: rgba(255,255,255,0.8); }
+        .reply-indicator { display: none; background: rgba(18, 22, 32, 0.95); padding: 10px 15px; border-top: 1px solid rgba(255,255,255,0.06); align-items: center; justify-content: space-between; font-size: 13px; border-left: 4px solid #ff2a5f; }
+        
+        .chat-input-area { padding: 12px 14px calc(12px + env(safe-area-inset-bottom)); background: rgba(16, 20, 30, 0.95); border-top: 1px solid rgba(255, 255, 255, 0.06); display: flex; gap: 10px; align-items: center; }
+        .chat-input-area input { flex: 1; padding: 13px 18px; border-radius: 24px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(0, 0, 0, 0.4); color: white; font-size: 15px; outline: none; user-select: text; }
+        .chat-input-area button { width: 46px; height: 46px; border-radius: 50%; border: none; background: var(--primary-grad); color: white; display: flex; justify-content: center; align-items: center; cursor: pointer; flex-shrink: 0; }
 
-        .quoted-msg {
-            background: rgba(0, 0, 0, 0.25); border-right: 4px solid #00c6ff; padding: 6px 10px;
-            border-radius: 8px; font-size: 13px; margin-bottom: 6px; color: rgba(255,255,255,0.8);
-        }
-        .quoted-sender { font-weight: bold; color: #00c6ff; font-size: 11px; margin-bottom: 2px; }
-
-        .reply-indicator {
-            display: none; background: rgba(18, 22, 32, 0.95); padding: 10px 15px;
-            border-top: 1px solid rgba(255,255,255,0.06); align-items: center; justify-content: space-between;
-            font-size: 13px; border-left: 4px solid #ff2a5f;
-        }
-        .reply-indicator-content { color: white; }
-        .reply-indicator-content span { font-weight: bold; color: #ff2a5f; display: block; font-size: 11px; margin-bottom: 2px; }
-        .cancel-reply { background: none; border: none; color: var(--text-sub); font-size: 24px; cursor: pointer; padding: 0 10px; }
-
-        .chat-input-area {
-            padding: 12px 14px calc(12px + env(safe-area-inset-bottom)); background: rgba(16, 20, 30, 0.95);
-            border-top: 1px solid rgba(255, 255, 255, 0.06); display: flex; gap: 10px; align-items: center;
-        }
-        .chat-input-area input {
-            flex: 1; padding: 13px 18px; border-radius: 24px; border: 1px solid rgba(255, 255, 255, 0.1);
-            background: rgba(0, 0, 0, 0.4); color: white; font-size: 15px; outline: none; user-select: text;
-        }
-        .chat-input-area input:focus { border-color: #00c6ff; }
-        .chat-input-area button {
-            width: 46px; height: 46px; border-radius: 50%; border: none; background: var(--primary-grad);
-            color: white; display: flex; justify-content: center; align-items: center; cursor: pointer;
-            box-shadow: 0 4px 15px var(--accent-glow); flex-shrink: 0; transition: transform 0.2s;
-        }
-        .chat-input-area button:active { transform: scale(0.9); }
+        /* Modal Overlay */
+        .modal-overlay { display: none; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(6, 7, 10, 0.92); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); justify-content: center; align-items: center; z-index: 100; }
+        .modal-card { width: 85%; background: rgba(25, 30, 45, 0.95); border: 1px solid rgba(0, 198, 255, 0.3); border-radius: 28px; padding: 28px 22px; text-align: center; }
+        .modal-card h3 { font-size: 22px; margin-bottom: 8px; color: var(--text-main); }
+        .modal-card p { font-size: 13px; color: var(--text-sub); margin-bottom: 20px; }
+        .modal-card input { width: 100%; padding: 15px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.4); color: #fff; font-size: 18px; text-align: center; outline: none; margin-bottom: 18px; user-select: text; }
+        .modal-card button { width: 100%; padding: 15px; border-radius: 16px; border: none; background: var(--primary-grad); color: white; font-size: 16px; font-weight: 800; cursor: pointer; }
+        .identity-selector { display: flex; gap: 10px; margin-bottom: 15px; }
+        .identity-btn { flex: 1; padding: 12px; border-radius: 14px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-sub); font-weight: 700; cursor: pointer; }
+        .identity-btn.active { background: var(--primary-grad); color: #fff; border-color: transparent; }
     </style>
 </head>
 <body>
 
 <div class="app-container">
     <div class="header">
-        <span id="secret-trigger-header" style="cursor: pointer;">X - O ULTRA</span>
+        <span id="secret-trigger-header" style="cursor: pointer;">X-O & MORE 🎮</span>
     </div>
 
-    <!-- قسم اللعبة -->
+    <!-- قسم الألعاب -->
     <div id="game-section">
         <button class="nav-back-chat-btn" id="nav-back-chat">العودة للشات 💬</button>
         
@@ -321,22 +196,57 @@
             <button class="mode-btn" id="btn-mode-online">لعب أونلاين 🌐</button>
         </div>
         
-        <div class="board" id="board">
-            <div class="cell" data-index="0"></div>
-            <div class="cell" data-index="1"></div>
-            <div class="cell" data-index="2"></div>
-            <div class="cell" data-index="3"></div>
-            <div class="cell" data-index="4"></div>
-            <div class="cell" data-index="5"></div>
-            <div class="cell" data-index="6"></div>
-            <div class="cell" data-index="7"></div>
-            <div class="cell" data-index="8"></div>
+        <!-- اللوبي للأونلاين -->
+        <div class="lobby-container" id="lobby-container">
+            <div class="lobby-box">
+                <h3>إنشاء غرفة جديدة</h3>
+                <button class="btn-action" id="btn-create-room">توليد كود 🎲</button>
+                <div class="room-code-display" id="room-code-display" style="display:none;"></div>
+                <div id="lobby-waiting-text" style="color:var(--text-sub); font-size:12px; display:none;">في انتظار انضمام الطرف الآخر...</div>
+            </div>
+            <div class="lobby-box">
+                <h3>الانضمام لغرفة</h3>
+                <input type="number" id="input-room-code" class="lobby-input" placeholder="أدخل كود الغرفة (4 أرقام)">
+                <button class="btn-action" id="btn-join-room" style="background:var(--primary-grad)">انضمام للعب 🚀</button>
+            </div>
         </div>
-        
-        <div class="status-bar" id="status-bar">دورك باللعب (X)</div>
 
-        <div class="online-controls" id="online-controls">
-            <button class="btn-join" id="btn-join-online">إنشاء / انضمام للعبة 🚀</button>
+        <!-- ساحة اللعب النشطة -->
+        <div class="game-area" id="game-area">
+            <div class="status-bar" id="status-bar">دورك باللعب</div>
+
+            <!-- X-O Board -->
+            <div class="xo-board" id="xo-container">
+                <div class="cell" data-index="0"></div><div class="cell" data-index="1"></div><div class="cell" data-index="2"></div>
+                <div class="cell" data-index="3"></div><div class="cell" data-index="4"></div><div class="cell" data-index="5"></div>
+                <div class="cell" data-index="6"></div><div class="cell" data-index="7"></div><div class="cell" data-index="8"></div>
+            </div>
+
+            <!-- حجرة ورقة مقص -->
+            <div class="rps-container" id="rps-container">
+                <div class="rps-battle">
+                    <div class="rps-player-box">
+                        <div class="rps-player-name">أنت</div>
+                        <div id="rps-my-move">❔</div>
+                    </div>
+                    <div style="font-size: 20px; align-self: center; color:var(--text-sub)">VS</div>
+                    <div class="rps-player-box">
+                        <div class="rps-player-name">الخصم</div>
+                        <div id="rps-enemy-move">❔</div>
+                    </div>
+                </div>
+                <div class="rps-choices">
+                    <div class="rps-btn" data-choice="✊">✊</div>
+                    <div class="rps-btn" data-choice="✋">✋</div>
+                    <div class="rps-btn" data-choice="✌️">✌️</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- شريط التبديل السفلي -->
+        <div class="bottom-nav">
+            <div class="nav-tab active" data-game="xo">لعبة X-O</div>
+            <div class="nav-tab" data-game="rps">حجرة ورقة مقص</div>
         </div>
     </div>
 
@@ -345,19 +255,17 @@
         <div class="modal-card">
             <h3>منطقة ندى ومحمد 🔒</h3>
             <p>اختر حسابك وأدخل الكود السري للدخول</p>
-            
             <div class="identity-selector">
                 <button class="identity-btn" id="select-nada">ندى</button>
                 <button class="identity-btn" id="select-mohamed">محمد</button>
             </div>
-
             <input type="password" id="secret-input" placeholder="••••••••">
             <button id="verify-btn">دخول المحادثة</button>
             <div id="error-msg" style="color: #ff2a5f; font-size: 13px; margin-top: 12px; display: none;">الرمز غير صحيح!</div>
         </div>
     </div>
 
-    <!-- قسم الشات السري -->
+    <!-- قسم الشات -->
     <div id="chat-section">
         <div class="chat-header">
             <div class="chat-title-group">
@@ -368,41 +276,24 @@
                 </div>
             </div>
             <div class="chat-header-actions">
-                <button class="game-toggle-btn" id="btn-go-game">اللعبة 🎮</button>
-                <button class="switch-user-btn" id="switch-user-btn">تبديل</button>
+                <button class="game-toggle-btn" id="btn-go-game">الألعاب 🎮</button>
             </div>
         </div>
-
         <div class="chat-messages" id="chat-messages"></div>
-
         <div class="reply-indicator" id="reply-indicator">
-            <div class="reply-indicator-content">
-                <span id="reply-to-name">الرد على: </span>
-                <div id="reply-to-text">نص الرسالة...</div>
-            </div>
-            <button class="cancel-reply" id="cancel-reply">×</button>
+            <div style="color:white"><span id="reply-to-name" style="color:#ff2a5f; font-weight:bold; font-size:11px; display:block;"></span><div id="reply-to-text"></div></div>
+            <button class="cancel-reply" id="cancel-reply" style="background:none; border:none; color:white; font-size:20px;">×</button>
         </div>
-
         <div class="chat-input-area">
             <input type="text" id="chat-input" placeholder="اكتب رسالة... (انقر مرتين للرد)">
-            <button id="send-btn">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
-            </button>
+            <button id="send-btn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg></button>
         </div>
     </div>
 </div>
 
-<script>
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            navigator.serviceWorker.register('sw.js').catch(err => console.log(err));
-        });
-    }
-</script>
-
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getDatabase, ref, push, onChildAdded, serverTimestamp, set, onValue, update } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+    import { getDatabase, ref, push, onChildAdded, serverTimestamp, set, onValue, update, get, off } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyCBEtbRajG95opDRkHbstnmt79a4v8lUX0",
@@ -417,349 +308,399 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
     
-    const chatRef = ref(db, 'nada_mohamed_v2'); 
-    const matchRef = ref(db, 'xo_online_match'); 
-
     // ==========================================
-    // 1. حفظ واسترجاع الاسم تلقائياً بدون إعادة اختيار
+    // إعدادات المستخدم والشات السري
     // ==========================================
-    let deviceId = localStorage.getItem('app_device_id');
-    if (!deviceId) {
-        deviceId = 'dev_' + Math.random().toString(36).substring(2, 9);
-        localStorage.setItem('app_device_id', deviceId);
-    }
-
-    // استرجاع الاسم المحفوظ أو التعيين لـ "ندى" افتراضياً
+    let deviceId = localStorage.getItem('app_device_id') || ('dev_' + Math.random().toString(36).substring(2, 9));
+    localStorage.setItem('app_device_id', deviceId);
     let selectedUser = localStorage.getItem('chat_username') || 'ندى';
+    let hasUnlockedChat = false; 
 
     const btnNada = document.getElementById('select-nada');
     const btnMohamed = document.getElementById('select-mohamed');
-
+    
     function updateIdentityButtons() {
-        if (selectedUser === 'ندى') {
-            btnNada.classList.add('active');
-            btnMohamed.classList.remove('active');
-        } else {
-            btnMohamed.classList.add('active');
-            btnNada.classList.remove('active');
-        }
+        btnNada.classList.toggle('active', selectedUser === 'ندى');
+        btnMohamed.classList.toggle('active', selectedUser === 'محمد');
     }
     updateIdentityButtons();
+    btnNada.onclick = () => { selectedUser = 'ندى'; localStorage.setItem('chat_username', 'ندى'); updateIdentityButtons(); };
+    btnMohamed.onclick = () => { selectedUser = 'محمد'; localStorage.setItem('chat_username', 'محمد'); updateIdentityButtons(); };
 
-    btnNada.addEventListener('click', () => { 
-        selectedUser = 'ندى'; 
-        localStorage.setItem('chat_username', 'ندى'); 
-        updateIdentityButtons(); 
-    });
-
-    btnMohamed.addEventListener('click', () => { 
-        selectedUser = 'محمد'; 
-        localStorage.setItem('chat_username', 'محمد'); 
-        updateIdentityButtons(); 
-    });
-
-    document.getElementById('switch-user-btn').addEventListener('click', () => {
-        document.getElementById('secret-modal').style.display = 'flex';
-    });
-
-    // ==========================================
-    // 2. التنقل السلس بين الشات واللعبة
-    // ==========================================
-    let hasUnlockedChat = false; 
-    const navBackChatBtn = document.getElementById('nav-back-chat');
-    const btnGoGame = document.getElementById('btn-go-game');
-
-    btnGoGame.addEventListener('click', () => {
-        document.getElementById('chat-section').style.display = 'none';
-        document.getElementById('game-section').style.display = 'flex';
-        navBackChatBtn.style.display = 'block'; // إظهار زر الرجوع للشات
-    });
-
-    navBackChatBtn.addEventListener('click', () => {
-        document.getElementById('game-section').style.display = 'none';
-        document.getElementById('chat-section').style.display = 'flex';
-    });
-
-    // ==========================================
-    // 3. التفعيل السري (3 ضغطات)
-    // ==========================================
-    let clickCount = 0;
-    let clickTimer = null;
-
-    const registerSecretTouch = () => {
-        // لو سجلت دخول بالفعل، الـ 3 ضغطات توديك للشات فوراً
-        if (hasUnlockedChat) {
-            document.getElementById('game-section').style.display = 'none';
-            document.getElementById('chat-section').style.display = 'flex';
-            return;
-        }
-
-        clickCount++;
-        clearTimeout(clickTimer);
-        if (clickCount >= 3) {
-            document.getElementById('secret-modal').style.display = 'flex';
-            clickCount = 0;
-        }
-        clickTimer = setTimeout(() => { clickCount = 0; }, 1200);
+    let clickCount = 0, clickTimer = null;
+    document.getElementById('secret-trigger-header').onclick = () => {
+        if (hasUnlockedChat) { switchTabUI('chat'); return; }
+        clickCount++; clearTimeout(clickTimer);
+        if (clickCount >= 3) { document.getElementById('secret-modal').style.display = 'flex'; clickCount = 0; }
+        clickTimer = setTimeout(() => clickCount = 0, 1200);
     };
 
-    document.getElementById('secret-trigger-header').addEventListener('click', registerSecretTouch);
-    document.getElementById('board').addEventListener('click', registerSecretTouch);
-
-    // التحقق من كلمة السر
-    document.getElementById('verify-btn').addEventListener('click', () => {
-        const input = document.getElementById('secret-input').value;
-        if (input === "Homos77#") {
-            hasUnlockedChat = true;
-            localStorage.setItem('chat_username', selectedUser);
+    document.getElementById('verify-btn').onclick = () => {
+        if (document.getElementById('secret-input').value === "Homos77#") {
+            hasUnlockedChat = true; localStorage.setItem('chat_username', selectedUser);
             document.getElementById('current-user-display').innerText = `أنت الآن: ${selectedUser}`;
             document.getElementById('secret-modal').style.display = 'none';
-            document.getElementById('game-section').style.display = 'none';
-            document.getElementById('chat-section').style.display = 'flex';
-            navBackChatBtn.style.display = 'block';
+            switchTabUI('chat');
         } else {
-            const err = document.getElementById('error-msg');
-            err.style.display = 'block';
-            setTimeout(() => err.style.display = 'none', 2000);
+            document.getElementById('error-msg').style.display = 'block';
+            setTimeout(() => document.getElementById('error-msg').style.display = 'none', 2000);
         }
-    });
-
-    // ==========================================
-    // 4. محرك لعبة X-O مع الحفاظ على اتصال الأونلاين
-    // ==========================================
-    let gameMode = 'ai';
-    let board = ["", "", "", "", "", "", "", "", ""];
-    let aiActive = true;
-    let myOnlineSymbol = null;
-
-    const cells = document.querySelectorAll('.cell');
-    const statusBar = document.getElementById('status-bar');
-    const btnAi = document.getElementById('btn-mode-ai');
-    const btnOnline = document.getElementById('btn-mode-online');
-    const onlineControls = document.getElementById('online-controls');
-    const btnJoinOnline = document.getElementById('btn-join-online');
-
-    const winPatterns = [
-        [0,1,2],[3,4,5],[6,7,8],
-        [0,3,6],[1,4,7],[2,5,8],
-        [0,4,8],[2,4,6]
-    ];
-
-    btnAi.onclick = () => { gameMode = 'ai'; btnAi.classList.add('active'); btnOnline.classList.remove('active'); onlineControls.style.display = 'none'; resetGame(); };
-    btnOnline.onclick = () => { gameMode = 'online'; btnOnline.classList.add('active'); btnAi.classList.remove('active'); onlineControls.style.display = 'block'; statusBar.innerText = "اضغط للاتصال بالطرف الآخر"; clearUIBoard(); };
-
-    function checkWinCondition(boardArr) {
-        for (let p of winPatterns) {
-            if (boardArr[p[0]] && boardArr[p[0]] === boardArr[p[1]] && boardArr[p[0]] === boardArr[p[2]]) {
-                return boardArr[p[0]];
-            }
-        }
-        return boardArr.includes("") ? null : "draw";
-    }
-
-    function playLocalTurn(idx, symbol) {
-        board[idx] = symbol; updateUICell(idx, symbol);
-        let result = checkWinCondition(board);
-        if(result) {
-            statusBar.innerText = result === "draw" ? "تعادل! 🤝" : "انتهت اللعبة! 🎉";
-            aiActive = false; setTimeout(resetGame, 2000);
-        }
-    }
-
-    function botMove() {
-        let empty = board.map((v, i) => v === "" ? i : null).filter(v => v !== null);
-        if(empty.length > 0) {
-            playLocalTurn(empty[Math.floor(Math.random() * empty.length)], "O");
-        }
-    }
-
-    function resetGame() {
-        board = ["", "", "", "", "", "", "", "", ""];
-        aiActive = true; statusBar.innerText = "دورك باللعب (X)"; clearUIBoard();
-    }
-
-    // انضمام للعب الأونلاين
-    btnJoinOnline.onclick = () => {
-        update(matchRef, { requestJoin: deviceId, timestamp: serverTimestamp() });
-        statusBar.innerText = "جاري الاتصال بالسيرفر... ⏳";
-        
-        onValue(matchRef, (snap) => {
-            const data = snap.val();
-            if(!data || !data.p1) {
-                set(matchRef, { board: ["","","","","","","","",""], turn: "X", p1: deviceId, p2: null, status: "waiting" });
-                myOnlineSymbol = "X";
-            } else if (data.p1 !== deviceId && !data.p2) {
-                update(matchRef, { p2: deviceId, status: "playing" });
-                myOnlineSymbol = "O";
-            } else if (data.p1 === deviceId) { myOnlineSymbol = "X"; }
-            else if (data.p2 === deviceId) { myOnlineSymbol = "O"; }
-        }, { onlyOnce: true });
     };
 
-    // الاستماع المستمر لتحديثات مباراة الأونلاين بدون انقطاع عند الخروج للشات
-    onValue(matchRef, (snap) => {
-        const data = snap.val();
-        if(!data) return;
+    function switchTabUI(tab) {
+        document.getElementById('game-section').style.display = tab === 'game' ? 'flex' : 'none';
+        document.getElementById('chat-section').style.display = tab === 'chat' ? 'flex' : 'none';
+        document.getElementById('nav-back-chat').style.display = (tab === 'game' && hasUnlockedChat) ? 'block' : 'none';
+    }
+    document.getElementById('btn-go-game').onclick = () => switchTabUI('game');
+    document.getElementById('nav-back-chat').onclick = () => switchTabUI('chat');
 
-        // تحديث اللوحة فقط لو أنشأنا اللعبة
-        if (data.p1 === deviceId || data.p2 === deviceId) {
-            data.board.forEach((val, i) => updateUICell(i, val));
+    // ==========================================
+    // محرك الألعاب (Game Engine & Room System)
+    // ==========================================
+    let activeGame = 'xo'; // 'xo' or 'rps'
+    let playMode = 'ai'; // 'ai' or 'online'
+    
+    // Online Variables
+    let currentRoomCode = null;
+    let roomRef = null;
+    let roomListener = null;
+    let myRole = null; // 'p1' or 'p2'
+    let onlineXO_Symbol = null; // 'X' or 'O'
 
-            if(data.status === "waiting") {
-                statusBar.innerText = "في انتظار دخول الطرف الآخر... ⏳";
-            } else if (data.status === "playing") {
-                if(data.turn === myOnlineSymbol) statusBar.innerText = "إلعب، هذا دورك! (" + myOnlineSymbol + ")";
-                else statusBar.innerText = "انتظر دور الطرف الآخر... (" + (myOnlineSymbol==="X"?"O":"X") + ")";
-            }
+    // UI Elements
+    const btnModeAi = document.getElementById('btn-mode-ai');
+    const btnModeOnline = document.getElementById('btn-mode-online');
+    const lobbyContainer = document.getElementById('lobby-container');
+    const gameArea = document.getElementById('game-area');
+    const xoContainer = document.getElementById('xo-container');
+    const rpsContainer = document.getElementById('rps-container');
+    const statusBar = document.getElementById('status-bar');
+    const tabs = document.querySelectorAll('.nav-tab');
 
-            let res = checkWinCondition(data.board);
-            if(res && data.status === "playing") {
-                statusBar.innerText = res === "draw" ? "انتهت بالتعادل! 🤝" : `اللاعب (${res}) فاز! 🎉`;
-                update(matchRef, { status: "finished" });
-                if(myOnlineSymbol === "X") setTimeout(() => set(matchRef, { board: ["","","","","","","","",""], turn: "X", p1: deviceId, p2: data.p2, status: "playing" }), 3000);
+    // تبديل المود (AI / Online)
+    btnModeAi.onclick = () => { playMode = 'ai'; updateModeUI(); resetLocalGames(); leaveRoom(); };
+    btnModeOnline.onclick = () => { playMode = 'online'; updateModeUI(); };
+
+    function updateModeUI() {
+        btnModeAi.classList.toggle('active', playMode === 'ai');
+        btnModeOnline.classList.toggle('active', playMode === 'online');
+        if (playMode === 'ai') {
+            lobbyContainer.style.display = 'none';
+            gameArea.style.display = 'flex';
+        } else {
+            if (currentRoomCode) {
+                lobbyContainer.style.display = 'none'; gameArea.style.display = 'flex';
+            } else {
+                lobbyContainer.style.display = 'flex'; gameArea.style.display = 'none';
             }
         }
-    });
+    }
 
-    cells.forEach(cell => {
-        cell.onclick = () => {
-            const idx = cell.getAttribute('data-index');
-            if(gameMode === 'ai') {
-                if(board[idx] === "" && aiActive) {
-                    playLocalTurn(idx, "X");
-                    if(aiActive) setTimeout(botMove, 400);
-                }
-            } else if (gameMode === 'online') {
-                onValue(matchRef, (snap) => {
-                    const data = snap.val();
-                    if(data && data.status === "playing" && data.turn === myOnlineSymbol && data.board[idx] === "") {
-                        let newBoard = [...data.board];
-                        newBoard[idx] = myOnlineSymbol;
-                        let nextTurn = myOnlineSymbol === "X" ? "O" : "X";
-                        update(matchRef, { board: newBoard, turn: nextTurn });
-                    }
-                }, { onlyOnce: true });
+    // تبديل اللعبة من التبويبات السفلية
+    tabs.forEach(tab => {
+        tab.onclick = () => {
+            const game = tab.getAttribute('data-game');
+            tabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            
+            // إذا كنا أونلاين، نقوم بتحديث اللعبة في الغرفة للطرفين
+            if (playMode === 'online' && currentRoomCode) {
+                update(roomRef, { activeGame: game });
+            } else {
+                activeGame = game;
+                updateGameContainers();
             }
         };
     });
 
-    function updateUICell(idx, symbol) {
-        cells[idx].innerText = symbol;
-        cells[idx].className = 'cell';
-        if(symbol) cells[idx].classList.add(symbol.toLowerCase());
+    function updateGameContainers() {
+        xoContainer.style.display = activeGame === 'xo' ? 'grid' : 'none';
+        rpsContainer.style.display = activeGame === 'rps' ? 'flex' : 'none';
+        tabs.forEach(t => t.classList.toggle('active', t.getAttribute('data-game') === activeGame));
+        
+        if (playMode === 'ai') resetLocalGames();
     }
-    function clearUIBoard() { cells.forEach(c => { c.innerText = ""; c.className = 'cell'; }); }
+
+    // ---------------- الغرف الأونلاين ----------------
+    document.getElementById('btn-create-room').onclick = () => {
+        const code = Math.floor(1000 + Math.random() * 9000).toString(); // كود من 4 أرقام
+        document.getElementById('room-code-display').innerText = code;
+        document.getElementById('room-code-display').style.display = 'block';
+        document.getElementById('lobby-waiting-text').style.display = 'block';
+        
+        joinOrCreateRoom(code, true);
+    };
+
+    document.getElementById('btn-join-room').onclick = () => {
+        const code = document.getElementById('input-room-code').value;
+        if(code.length === 4) joinOrCreateRoom(code, false);
+    };
+
+    function leaveRoom() {
+        if(roomRef && roomListener) off(roomRef, 'value', roomListener);
+        currentRoomCode = null; myRole = null;
+    }
+
+    function joinOrCreateRoom(code, isCreator) {
+        leaveRoom();
+        currentRoomCode = code;
+        roomRef = ref(db, `rooms/${code}`);
+
+        if (isCreator) {
+            set(roomRef, {
+                status: 'waiting', p1: deviceId, p2: null, activeGame: activeGame,
+                xoState: { board: ["","","","","","","","",""], turn: 'X' },
+                rpsState: { p1Choice: "", p2Choice: "" }
+            });
+            myRole = 'p1'; onlineXO_Symbol = 'X';
+        } else {
+            get(roomRef).then((snap) => {
+                const data = snap.val();
+                if (data && data.status === 'waiting') {
+                    update(roomRef, { p2: deviceId, status: 'playing' });
+                    myRole = 'p2'; onlineXO_Symbol = 'O';
+                }
+            });
+        }
+
+        // الاستماع لتغييرات الغرفة لحظياً
+        roomListener = onValue(roomRef, (snap) => {
+            const data = snap.val();
+            if (!data) return;
+
+            // تغيير اللعبة إذا قام أحد الأطراف بتغييرها
+            if (data.activeGame !== activeGame) {
+                activeGame = data.activeGame;
+                updateGameContainers();
+            }
+
+            if (data.status === 'waiting') {
+                lobbyContainer.style.display = 'flex'; gameArea.style.display = 'none';
+            } else if (data.status === 'playing') {
+                lobbyContainer.style.display = 'none'; gameArea.style.display = 'flex';
+                
+                if (activeGame === 'xo') syncXO(data.xoState);
+                if (activeGame === 'rps') syncRPS(data.rpsState);
+            }
+        });
+    }
+
+    // ---------------- منطق لعبة X-O ----------------
+    let localBoard = ["","","","","","","","",""];
+    let xoActive = true;
+    const xoCells = document.querySelectorAll('.cell');
+    const winPatterns = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+
+    function checkWin(b) {
+        for (let p of winPatterns) if (b[p[0]] && b[p[0]] === b[p[1]] && b[p[0]] === b[p[2]]) return b[p[0]];
+        return b.includes("") ? null : "draw";
+    }
+
+    // AI Logic
+    function resetLocalGames() {
+        if(activeGame === 'xo') {
+            localBoard = ["","","","","","","","",""]; xoActive = true;
+            xoCells.forEach(c => { c.innerText = ""; c.className = 'cell'; });
+            statusBar.innerText = "دورك باللعب (X)";
+        } else {
+            document.getElementById('rps-my-move').innerText = "❔";
+            document.getElementById('rps-enemy-move').innerText = "❔";
+            document.querySelectorAll('.rps-btn').forEach(b => b.classList.remove('selected'));
+            statusBar.innerText = "اختر حركتك!"; rpsActive = true;
+        }
+    }
+
+    function botXOMove() {
+        let empty = localBoard.map((v,i) => v===""?i:null).filter(v=>v!==null);
+        if(empty.length > 0 && xoActive) {
+            let idx = empty[Math.floor(Math.random() * empty.length)];
+            localBoard[idx] = "O"; renderXOCell(idx, "O");
+            let res = checkWin(localBoard);
+            if(res) { statusBar.innerText = res==="draw"?"تعادل! 🤝":"الكمبيوتر فاز!"; xoActive = false; setTimeout(resetLocalGames, 1500); }
+            else statusBar.innerText = "دورك باللعب (X)";
+        }
+    }
+
+    xoCells.forEach(cell => {
+        cell.onclick = () => {
+            const idx = cell.getAttribute('data-index');
+            if (playMode === 'ai' && xoActive && localBoard[idx] === "") {
+                localBoard[idx] = "X"; renderXOCell(idx, "X");
+                let res = checkWin(localBoard);
+                if(res) { statusBar.innerText = res==="draw"?"تعادل! 🤝":"فزت! 🎉"; xoActive = false; setTimeout(resetLocalGames, 1500); }
+                else { statusBar.innerText = "دور الكمبيوتر..."; setTimeout(botXOMove, 500); }
+            } 
+            else if (playMode === 'online' && currentRoomCode) {
+                // Online XO Logic
+                get(roomRef).then((snap) => {
+                    const state = snap.val().xoState;
+                    if (state.turn === onlineXO_Symbol && state.board[idx] === "") {
+                        state.board[idx] = onlineXO_Symbol;
+                        state.turn = onlineXO_Symbol === "X" ? "O" : "X";
+                        update(roomRef, { xoState: state });
+                    }
+                });
+            }
+        };
+    });
+
+    function syncXO(state) {
+        state.board.forEach((val, i) => renderXOCell(i, val));
+        
+        let res = checkWin(state.board);
+        if(res) {
+            statusBar.innerText = res === "draw" ? "النتيجة تعادل! 🤝" : `اللاعب (${res}) فاز! 🎉`;
+            if(myRole === 'p1') {
+                setTimeout(() => update(roomRef, { xoState: { board: ["","","","","","","","",""], turn: 'X' } }), 2500);
+            }
+        } else {
+            statusBar.innerText = state.turn === onlineXO_Symbol ? `إلعب، دورك! (${onlineXO_Symbol})` : `انتظر دور الخصم...`;
+        }
+    }
+
+    function renderXOCell(idx, sym) {
+        xoCells[idx].innerText = sym;
+        xoCells[idx].className = 'cell ' + (sym ? sym.toLowerCase() : '');
+    }
+
+    // ---------------- منطق حجرة ورقة مقص ----------------
+    let rpsActive = true;
+    const rpsBtns = document.querySelectorAll('.rps-btn');
+    const rpsOptions = ["✊", "✋", "✌️"];
+    
+    function resolveRPS(p1, p2) {
+        if(p1 === p2) return "draw";
+        if((p1==="✊"&&p2==="✌️") || (p1==="✋"&&p2==="✊") || (p1==="✌️"&&p2==="✋")) return "p1";
+        return "p2";
+    }
+
+    rpsBtns.forEach(btn => {
+        btn.onclick = () => {
+            if(!rpsActive) return;
+            const myChoice = btn.getAttribute('data-choice');
+            
+            if (playMode === 'ai') {
+                rpsBtns.forEach(b => b.classList.remove('selected'));
+                btn.classList.add('selected');
+                document.getElementById('rps-my-move').innerText = myChoice;
+                
+                let botChoice = rpsOptions[Math.floor(Math.random()*3)];
+                document.getElementById('rps-enemy-move').innerText = botChoice;
+                
+                let res = resolveRPS(myChoice, botChoice);
+                if(res === "draw") statusBar.innerText = "تعادل!";
+                else if(res === "p1") statusBar.innerText = "فزت! 🎉";
+                else statusBar.innerText = "خسرت!";
+                
+                rpsActive = false;
+                setTimeout(resetLocalGames, 2000);
+            } 
+            else if (playMode === 'online' && currentRoomCode) {
+                rpsBtns.forEach(b => b.classList.remove('selected'));
+                btn.classList.add('selected');
+                document.getElementById('rps-my-move').innerText = myChoice;
+                statusBar.innerText = "في انتظار اختيار الخصم...";
+                
+                update(roomRef, { [`rpsState/${myRole}Choice`]: myChoice });
+            }
+        };
+    });
+
+    function syncRPS(state) {
+        if(!state.p1Choice && !state.p2Choice) {
+            // Reset state
+            document.getElementById('rps-my-move').innerText = "❔";
+            document.getElementById('rps-enemy-move').innerText = "❔";
+            rpsBtns.forEach(b => b.classList.remove('selected'));
+            statusBar.innerText = "اختر حركتك!";
+        }
+        else if (state.p1Choice && state.p2Choice) {
+            // Both selected
+            const myC = myRole === 'p1' ? state.p1Choice : state.p2Choice;
+            const enC = myRole === 'p1' ? state.p2Choice : state.p1Choice;
+            
+            document.getElementById('rps-my-move').innerText = myC;
+            document.getElementById('rps-enemy-move').innerText = enC;
+            
+            let res = resolveRPS(state.p1Choice, state.p2Choice);
+            if (res === "draw") statusBar.innerText = "تعادل!";
+            else if (res === myRole) statusBar.innerText = "أنت الفائز! 🎉";
+            else statusBar.innerText = "الخصم فاز!";
+            
+            if (myRole === 'p1') {
+                setTimeout(() => update(roomRef, { rpsState: { p1Choice: "", p2Choice: "" } }), 3000);
+            }
+        }
+        else if ((myRole==='p1' && state.p1Choice) || (myRole==='p2' && state.p2Choice)) {
+            statusBar.innerText = "في انتظار الخصم...";
+        }
+        else {
+            statusBar.innerText = "الخصم اختار، دورك!";
+        }
+    }
+
 
     // ==========================================
-    // 5. محرك الشات السري والرد
+    // محرك الشات (يحتفظ بكود nada_mohamed_v2)
     // ==========================================
+    const chatRef = ref(db, 'nada_mohamed_v2'); 
     const chatInput = document.getElementById('chat-input');
     const sendBtn = document.getElementById('send-btn');
     const chatContainer = document.getElementById('chat-messages');
 
     let replyToData = null; 
-    const replyIndicator = document.getElementById('reply-indicator');
-    const replyToName = document.getElementById('reply-to-name');
-    const replyToText = document.getElementById('reply-to-text');
-    const cancelReplyBtn = document.getElementById('cancel-reply');
-
-    cancelReplyBtn.onclick = () => {
-        replyToData = null;
-        replyIndicator.style.display = 'none';
-    };
-
-    sendBtn.addEventListener('click', sendMsg);
-    chatInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMsg(); });
+    document.getElementById('cancel-reply').onclick = () => { replyToData = null; document.getElementById('reply-indicator').style.display = 'none'; };
 
     function sendMsg() {
         const text = chatInput.value.trim();
         if (text) {
-            const now = new Date();
-            const timeFormatted = now.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
-
             let msgPayload = {
-                senderId: deviceId,
-                senderName: selectedUser,
-                msg: text,
-                time: timeFormatted,
+                senderId: deviceId, senderName: selectedUser, msg: text,
+                time: new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' }),
                 timestamp: serverTimestamp()
             };
-
-            if (replyToData) {
-                msgPayload.replyTo = replyToData;
-            }
-
+            if (replyToData) msgPayload.replyTo = replyToData;
             push(chatRef, msgPayload);
-            chatInput.value = '';
-            cancelReplyBtn.click();
+            chatInput.value = ''; document.getElementById('cancel-reply').click();
         }
     }
+    sendBtn.onclick = sendMsg;
+    chatInput.onkeypress = (e) => { if (e.key === 'Enter') sendMsg(); };
 
     onChildAdded(chatRef, (snapshot) => {
         const data = snapshot.val();
         const isMe = (data.senderId === deviceId) || (data.senderName === selectedUser);
-
-        const row = document.createElement('div');
-        row.className = `message-row ${isMe ? 'me' : 'other'}`;
-
-        const bubble = document.createElement('div');
-        bubble.className = 'message-bubble';
-
-        let replyHtml = '';
-        if (data.replyTo) {
-            replyHtml = `
-                <div class="quoted-msg">
-                    <div class="quoted-sender">${data.replyTo.sender}</div>
-                    <div class="quoted-text">${data.replyTo.text}</div>
-                </div>
-            `;
-        }
-
+        const row = document.createElement('div'); row.className = `message-row ${isMe ? 'me' : 'other'}`;
+        
+        let replyHtml = data.replyTo ? `<div class="quoted-msg"><div class="quoted-sender">${data.replyTo.sender}</div><div>${data.replyTo.text}</div></div>` : '';
         let nameHtml = !isMe ? `<div class="sender-name">${data.senderName || 'الطرف الآخر'}</div>` : '';
-        let ticksHtml = isMe ? `<span class="ticks">✓✓</span>` : '';
-
-        bubble.innerHTML = `
-            ${nameHtml}
-            ${replyHtml}
-            <div>${data.msg}</div>
-            <div class="message-footer">
-                <span>${data.time || ''}</span>
-                ${ticksHtml}
-            </div>
-        `;
-
-        let tapTimeout;
-        let lastTap = 0;
         
-        bubble.addEventListener('touchend', function(e) {
-            let currentTime = new Date().getTime();
-            let tapLength = currentTime - lastTap;
+        const bubble = document.createElement('div'); bubble.className = 'message-bubble';
+        bubble.innerHTML = `${nameHtml}${replyHtml}<div>${data.msg}</div><div class="message-footer"><span>${data.time || ''}</span>${isMe ? '<span class="ticks" style="color:#00f2fe;font-size:12px;margin-right:3px;">✓✓</span>' : ''}</div>`;
+        
+        let tapTimeout, lastTap = 0;
+        const triggerReply = (e) => {
+            if(e) e.preventDefault();
+            let shortText = data.msg.length > 40 ? data.msg.substring(0, 40) + '...' : data.msg;
+            replyToData = { sender: data.senderName || (isMe ? selectedUser : 'الطرف الآخر'), text: shortText };
+            document.getElementById('reply-to-name').innerText = `الرد على: ${replyToData.sender}`;
+            document.getElementById('reply-to-text').innerText = shortText;
+            document.getElementById('reply-indicator').style.display = 'flex';
+            chatInput.focus();
+        };
+        bubble.ontouchend = (e) => {
+            let cur = new Date().getTime(), len = cur - lastTap;
             clearTimeout(tapTimeout);
-            if (tapLength < 500 && tapLength > 0) {
-                initiateReply(data.senderName || (isMe ? selectedUser : 'الطرف الآخر'), data.msg);
-                e.preventDefault();
-            } else {
-                tapTimeout = setTimeout(function() { clearTimeout(tapTimeout); }, 500);
-            }
-            lastTap = currentTime;
-        });
-        
-        bubble.addEventListener('dblclick', () => initiateReply(data.senderName || (isMe ? selectedUser : 'الطرف الآخر'), data.msg));
+            if (len < 500 && len > 0) triggerReply(e);
+            else tapTimeout = setTimeout(() => clearTimeout(tapTimeout), 500);
+            lastTap = cur;
+        };
+        bubble.ondblclick = () => triggerReply();
 
-        row.appendChild(bubble);
-        chatContainer.appendChild(row);
-        chatContainer.scrollTop = chatContainer.scrollHeight;
+        row.appendChild(bubble); chatContainer.appendChild(row); chatContainer.scrollTop = chatContainer.scrollHeight;
     });
 
-    function initiateReply(senderName, text) {
-        let shortText = text.length > 40 ? text.substring(0, 40) + '...' : text;
-        replyToData = { sender: senderName, text: shortText };
-        replyToName.innerText = `الرد على: ${senderName}`;
-        replyToText.innerText = shortText;
-        replyIndicator.style.display = 'flex';
-        chatInput.focus();
-    }
 </script>
-
 </body>
 </html>
